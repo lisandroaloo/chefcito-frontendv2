@@ -3,11 +3,14 @@
 import { useState } from "react"
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
+import { useNavigation } from "@react-navigation/native"
 
-export default function CreateRecipeScreen({ navigation }: any) {
+export default function CreateRecipeScreen() {
   const [recipeName, setRecipeName] = useState("")
   const [ingredients, setIngredients] = useState([""])
   const [steps, setSteps] = useState([""])
+  const navigation = useNavigation()
+
 
   const addIngredient = () => {
     setIngredients([...ingredients, ""])
@@ -30,7 +33,7 @@ export default function CreateRecipeScreen({ navigation }: any) {
   }
 
   const handleSave = () => {
-    Alert.alert("Éxito", "Receta guardada correctamente", [{ text: "OK", onPress: () => navigation.goBack() }])
+    Alert.alert("Éxito", "Receta guardada correctamente", [{ text: "OK", onPress: () => router.back() }])
   }
 
   return (

@@ -3,9 +3,11 @@
 import { useState } from "react"
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
+import { useNavigation } from "@react-navigation/native"
 
-export default function ProfileScreen({ navigation }: any) {
+export default function ProfileScreen() {
   const [userRecipes, setUserRecipes] = useState(["Receta 1", "Receta 2", "Receta 3"])
+  const navigation = useNavigation()
 
   const handleDeleteRecipe = (index: number) => {
     Alert.alert("Eliminar receta", "¿Estás seguro de que quieres eliminar esta receta?", [
@@ -22,11 +24,11 @@ export default function ProfileScreen({ navigation }: any) {
   }
 
   const handleCreateRecipe = () => {
-    navigation.navigate("CreateRecipe")
+    navigation.navigate("create-recipe")
   }
 
   const handleEditRecipe = () => {
-    navigation.navigate("CreateRecipe")
+    navigation.navigate("create-recipe")
   }
 
   return (

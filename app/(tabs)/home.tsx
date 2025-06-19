@@ -1,23 +1,24 @@
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import { router } from "expo-router"
+import { useNavigation } from "@react-navigation/native"
 
 export default function HomeScreen() {
   const categories = [
-    { title: "Recetas sin taco", icon: "restaurant-outline" },
+    { title: "Recetas sin tac", icon: "restaurant-outline" },
     { title: "Recetas veganas", icon: "leaf-outline" },
     { title: "Postres", icon: "ice-cream-outline" },
     { title: "Nos apoyaron", icon: "heart-outline" },
     { title: "Hamburguesas", icon: "fast-food-outline" },
     { title: "Sin", icon: "close-circle-outline" },
   ]
+    const navigation = useNavigation()
 
   const handleCategoryPress = (category: string) => {
-    router.push(`/recipe-list?category=${encodeURIComponent(category)}`)
+        navigation.navigate("recipe-list", { category });
   }
 
   const handleProfilePress = () => {
-    router.push("/profile")
+    navigation.navigate("profile")
   }
 
   return (

@@ -1,9 +1,12 @@
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { useLocalSearchParams } from "expo-router"
+import { useRoute } from "@react-navigation/native";
+
 
 export default function RecipeDetailScreen() {
-  const { recipe } = useLocalSearchParams()
+  const route = useRoute();
+  const { recipe } = route.params || {};
 
   const ingredients = [
     "500g carne molida",

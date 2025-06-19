@@ -2,16 +2,16 @@
 
 import { useState } from "react"
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView } from "react-native"
-import { router } from "expo-router"
+import { useRoute } from "@react-navigation/native";
 import { Image } from 'react-native';
 
 
-export default function LoginScreen() {
-  const [alias, setAlias] = useState("")
+export default function PasswordResetScreen() {
   const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
 
-  const handleLogin = () => {
-    router.push("/home")
+  const handleChange = () => {
+      navigation.navigate("home")
   }
 
   return (
@@ -19,20 +19,11 @@ export default function LoginScreen() {
       <View style={styles.content}>
         <View style={styles.logoContainer}>
           <View style={styles.logo}>
-             <Image source={require("../assets/chefcito-logo.png")} style={styles.logo} resizeMode="contain" />
-            <Text style={styles.logoTitle}>Chefcito</Text>
+             <Image source={require("../../assets/chefcito-logo.png")} style={styles.logo} resizeMode="contain" />
           </View>
         </View>
 
         <View style={styles.form}>
-          <TextInput
-            style={styles.input}
-            placeholder="Alias"
-            value={alias}
-            onChangeText={setAlias}
-            placeholderTextColor="#999"
-          />
-
           <TextInput
             style={styles.input}
             placeholder="Password"
@@ -42,8 +33,17 @@ export default function LoginScreen() {
             placeholderTextColor="#999"
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Log in</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
+            placeholderTextColor="#999"
+          />
+
+          <TouchableOpacity style={styles.button} onPress={handleChange}>
+            <Text style={styles.buttonText}>Change</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -54,7 +54,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FF9500",
+    backgroundColor: "#FFAE52",
   },
   content: {
     flex: 1,
@@ -67,10 +67,10 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
  logo: {
-     width: 200,
-     height: 200,
-     marginBottom: 50,
-   },
+      width: 200,
+      height: 200,
+      marginBottom: 50,
+    },
   logoText: {
     fontSize: 80,
     marginBottom: 10,

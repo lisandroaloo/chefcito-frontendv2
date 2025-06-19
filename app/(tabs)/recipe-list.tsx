@@ -3,15 +3,19 @@
 import { useState } from "react"
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, TextInput } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
+import { router, useLocalSearchParams } from "expo-router"
+import { useRoute } from "@react-navigation/native";
 
-export default function RecipeListScreen({ navigation, route }: any) {
+
+export default function RecipeListScreen() {
   const [searchText, setSearchText] = useState("")
-  const { category } = route.params || { category: "Recetas" }
+  const route = useRoute();
+  const { category } = route.params || {};
 
   const recipes = ["Receta 1", "Receta 2", "Receta 3", "Receta 4", "Receta 5", "Receta 6", "Receta 7", "Receta 8"]
 
   const handleRecipePress = (recipe: string) => {
-    navigation.navigate("RecipeDetail", { recipe })
+        navigation.navigate("recipe-detail", { recipe });
   }
 
   return (

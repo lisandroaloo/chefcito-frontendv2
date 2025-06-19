@@ -2,37 +2,48 @@
 
 import { useState } from "react"
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView } from "react-native"
-import { router } from "expo-router"
+import { useNavigation } from "@react-navigation/native"
+import { Image } from 'react-native';
 
-export default function CodeVerificationScreen() {
-  const [code, setCode] = useState("")
 
-  const handleContinue = () => {
-    router.push("/home")
-  }
+export default function LoginScreen() {
+  const [alias, setAlias] = useState("")
+  const [password, setPassword] = useState("")
+  const navigation = useNavigation()
+
+  const handleLogin = () => {
+      navigation.navigate("home") // el nombre de la ruta registrada en el stack
+   }
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <View style={styles.logoContainer}>
           <View style={styles.logo}>
-            <Text style={styles.logoText}>👨‍🍳</Text>
-            <Text style={styles.logoTitle}>Chefcito</Text>
+             <Image source={require("../../assets/chefcito-logo.png")} style={styles.logo} resizeMode="contain" />
           </View>
         </View>
 
         <View style={styles.form}>
           <TextInput
             style={styles.input}
-            placeholder="Code"
-            value={code}
-            onChangeText={setCode}
+            placeholder="Alias"
+            value={alias}
+            onChangeText={setAlias}
             placeholderTextColor="#999"
-            keyboardType="numeric"
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleContinue}>
-            <Text style={styles.buttonText}>Continue</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            placeholderTextColor="#999"
+          />
+
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Log in</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -43,7 +54,7 @@ export default function CodeVerificationScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FF9500",
+    backgroundColor: "#FFAE52",
   },
   content: {
     flex: 1,
@@ -55,14 +66,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 50,
   },
-  logo: {
-    alignItems: "center",
-  },
+ logo: {
+     width: 200,
+     height: 200,
+     marginBottom: 50,
+   },
   logoText: {
     fontSize: 80,
     marginBottom: 10,
   },
   logoTitle: {
+
     fontSize: 32,
     fontWeight: "bold",
     color: "#8B4513",
