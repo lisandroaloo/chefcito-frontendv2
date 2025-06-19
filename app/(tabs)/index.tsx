@@ -1,110 +1,141 @@
 "use client"
 
 import { useState } from "react"
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView } from "react-native"
-import { useNavigation } from "@react-navigation/native"
+import { View, StyleSheet } from "react-native"
+import { TextInput, Button, useTheme, Surface, Text } from "react-native-paper"
+import { router } from "expo-router"
+import { SafeAreaView } from "react-native-safe-area-context"
 import { Image } from 'react-native';
+
+import { useNavigation } from "@react-navigation/native"
+
 
 
 export default function LoginScreen() {
   const [alias, setAlias] = useState("")
   const [password, setPassword] = useState("")
   const navigation = useNavigation()
+    const theme = useTheme()
+
 
   const handleLogin = () => {
       navigation.navigate("home") // el nombre de la ruta registrada en el stack
    }
 
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <View style={styles.logoContainer}>
-          <View style={styles.logo}>
+    <Surface style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.content}>
+          {/* Logo Section - Exact match to Figma */}
+          <View style={styles.logoContainer}>
+            <View style={styles.logoWrapper}>
              <Image source={require("../../assets/chefcito-logo.png")} style={styles.logo} resizeMode="contain" />
+            </View>
+          </View>
+
+          {/* Form Section - Exact Material 3 styling */}
+          <View style={styles.formContainer}>
+            <TextInput
+              label="Alias"
+              value={alias}
+              onChangeText={setAlias}
+              mode="filled"
+              style={styles.textInput}
+              contentStyle={styles.inputContent}
+              theme={{
+                colors: {
+                  onSurfaceVariant: "#666666",
+                  primary: theme.colors.secondary,
+                },
+              }}
+            />
+
+            <TextInput
+              label="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              mode="filled"
+              style={styles.textInput}
+              contentStyle={styles.inputContent}
+              theme={{
+                colors: {
+                  onSurfaceVariant: "#666666",
+                  primary: theme.colors.secondary,
+                },
+              }}
+            />
+
+            <Button
+              mode="contained"
+              onPress={handleLogin}
+              style={[styles.loginButton, { backgroundColor: theme.colors.secondary }]}
+              contentStyle={styles.buttonContent}
+              labelStyle={styles.buttonLabel}
+            >
+              Log in
+            </Button>
           </View>
         </View>
-
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
-            placeholder="Alias"
-            value={alias}
-            onChangeText={setAlias}
-            placeholderTextColor="#999"
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            placeholderTextColor="#999"
-          />
-
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Log in</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </Surface>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFAE52",
+  },
+  safeArea: {
+    flex: 1,
   },
   content: {
     flex: 1,
+    paddingHorizontal: 32,
     justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 40,
   },
   logoContainer: {
     alignItems: "center",
-    marginBottom: 50,
+    marginBottom: 80,
   },
- logo: {
-     width: 200,
-     height: 200,
-     marginBottom: 50,
-   },
+  logoWrapper: {
+    alignItems: "center",
+  },
+  chefEmoji: {
+    fontSize: 120,
+    marginBottom: 16,
+  },
   logoText: {
-    fontSize: 80,
-    marginBottom: 10,
-  },
-  logoTitle: {
-
-    fontSize: 32,
+    fontSize: 36,
     fontWeight: "bold",
-    color: "#8B4513",
-    textShadowColor: "rgba(0, 0, 0, 0.3)",
-    textShadowOffset: { width: 2, height: 2 },
+    textShadowColor: "rgba(0, 0, 0, 0.1)",
+    textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
   },
-  form: {
-    width: "100%",
+  formContainer: {
+    gap: 16,
   },
-  input: {
+  textInput: {
     backgroundColor: "rgba(255, 255, 255, 0.9)",
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    marginBottom: 15,
-    fontSize: 16,
   },
-  button: {
-    backgroundColor: "#8B4513",
-    borderRadius: 25,
-    paddingVertical: 12,
-    alignItems: "center",
-    marginTop: 10,
+  inputContent: {
+    paddingHorizontal: 16,
   },
-  buttonText: {
-    color: "white",
+  loginButton: {
+    marginTop: 8,
+    borderRadius: 24,
+  },
+  buttonContent: {
+    paddingVertical: 8,
+  },
+   logo: {
+         width: 200,
+         height: 200,
+         marginBottom: 50,
+       },
+  buttonLabel: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "600",
   },
 })

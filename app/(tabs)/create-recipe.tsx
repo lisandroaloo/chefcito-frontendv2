@@ -1,8 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
+import { View, StyleSheet, ScrollView } from "react-native"
+import { TextInput, Button, Card, Text, IconButton, useTheme, Surface, Snackbar } from "react-native-paper"
+import { router } from "expo-router"
+import { SafeAreaView } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
 
 export default function CreateRecipeScreen() {
@@ -10,6 +12,9 @@ export default function CreateRecipeScreen() {
   const [ingredients, setIngredients] = useState([""])
   const [steps, setSteps] = useState([""])
   const navigation = useNavigation()
+    const [snackbarVisible, setSnackbarVisible] = useState(false)
+
+   const theme = useTheme()
 
 
   const addIngredient = () => {
@@ -33,147 +38,197 @@ export default function CreateRecipeScreen() {
   }
 
   const handleSave = () => {
-    Alert.alert("Éxito", "Receta guardada correctamente", [{ text: "OK", onPress: () => router.back() }])
+    Alert.alert("Éxito", "Receta guardada correctamente", [{ text: "OK", onPress: () => navigation.goBack() }])
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.form}>
-          <TextInput
-            style={styles.nameInput}
-            placeholder="Nombre"
-            value={recipeName}
-            onChangeText={setRecipeName}
-            placeholderTextColor="#999"
-          />
+      <Surface style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <SafeAreaView style={styles.safeArea}>
+          <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+            {/* Recipe Name */}
+            <TextInput
+              label="Nombre"
+              value={recipeName}
+              onChangeText={setRecipeName}
+              mode="filled"
+              style={styles.nameInput}
+              theme={{
+                colors: {
+                  onSurfaceVariant: "#666666",
+                  primary: theme.colors.secondary,
+                },
+              }}
+            />
 
-          <TouchableOpacity style={styles.imageUpload}>
-            <Ionicons name="camera-outline" size={40} color="#8B4513" />
-            <Text style={styles.imageUploadText}>Cargar imagen</Text>
-          </TouchableOpacity>
+            {/* Image Upload */}
+            <Card style={styles.imageUploadCard} mode="elevated" elevation={2}>
+              <Card.Content style={styles.imageUploadContent}>
+                <IconButton icon="camera" size={40} iconColor={theme.colors.secondary} />
+                <Text variant="bodyMedium" style={[styles.imageUploadText, { color: theme.colors.secondary }]}>
+                  Cargar imagen
+                </Text>
+              </Card.Content>
+            </Card>
 
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Ingredientes</Text>
-              <TouchableOpacity onPress={addIngredient} style={styles.addButton}>
-                <Ionicons name="add-circle" size={24} color="#8B4513" />
-              </TouchableOpacity>
-            </View>
+            {/* Ingredients Section */}
+            <Card style={styles.section} mode="elevated" elevation={2}>
+              <Card.Content style={styles.sectionContent}>
+                <View style={styles.sectionHeader}>
+                  <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.secondary }]}>
+                    Ingredientes
+                  </Text>
+                  <IconButton
+                    icon="plus-circle"
+                    size={24}
+                    iconColor={theme.colors.secondary}
+                    onPress={addIngredient}
+                    style={styles.addButton}
+                  />
+                </View>
 
-            {ingredients.map((ingredient, index) => (
-              <TextInput
-                key={index}
-                style={styles.input}
-                placeholder={`Ingrediente ${index + 1}`}
-                value={ingredient}
-                onChangeText={(value) => updateIngredient(index, value)}
-                placeholderTextColor="#999"
-              />
-            ))}
-          </View>
+                <View style={styles.inputsList}>
+                  {ingredients.map((ingredient, index) => (
+                    <TextInput
+                      key={index}
+                      label={`Ingrediente ${index + 1}`}
+                      value={ingredient}
+                      onChangeText={(value) => updateIngredient(index, value)}
+                      mode="outlined"
+                      style={styles.listInput}
+                      theme={{
+                        colors: {
+                          onSurfaceVariant: "#666666",
+                          primary: theme.colors.secondary,
+                        },
+                      }}
+                    />
+                  ))}
+                </View>
+              </Card.Content>
+            </Card>
 
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Paso a paso</Text>
-              <TouchableOpacity onPress={addStep} style={styles.addButton}>
-                <Ionicons name="add-circle" size={24} color="#8B4513" />
-              </TouchableOpacity>
-            </View>
+            {/* Steps Section */}
+            <Card style={styles.section} mode="elevated" elevation={2}>
+              <Card.Content style={styles.sectionContent}>
+                <View style={styles.sectionHeader}>
+                  <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.secondary }]}>
+                    Paso a paso
+                  </Text>
+                  <IconButton
+                    icon="plus-circle"
+                    size={24}
+                    iconColor={theme.colors.secondary}
+                    onPress={addStep}
+                    style={styles.addButton}
+                  />
+                </View>
 
-            {steps.map((step, index) => (
-              <TextInput
-                key={index}
-                style={[styles.input, styles.stepInput]}
-                placeholder={`Paso ${index + 1}`}
-                value={step}
-                onChangeText={(value) => updateStep(index, value)}
-                placeholderTextColor="#999"
-                multiline
-              />
-            ))}
-          </View>
+                <View style={styles.inputsList}>
+                  {steps.map((step, index) => (
+                    <TextInput
+                      key={index}
+                      label={`Paso ${index + 1}`}
+                      value={step}
+                      onChangeText={(value) => updateStep(index, value)}
+                      mode="outlined"
+                      multiline
+                      numberOfLines={3}
+                      style={styles.listInput}
+                      theme={{
+                        colors: {
+                          onSurfaceVariant: "#666666",
+                          primary: theme.colors.secondary,
+                        },
+                      }}
+                    />
+                  ))}
+                </View>
+              </Card.Content>
+            </Card>
 
-          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.saveButtonText}>Guardar</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  )
-}
+            {/* Save Button */}
+            <Button
+              mode="contained"
+              onPress={handleSave}
+              style={[styles.saveButton, { backgroundColor: theme.colors.secondary }]}
+              contentStyle={styles.saveButtonContent}
+              labelStyle={styles.saveButtonLabel}
+            >
+              Guardar
+            </Button>
+          </ScrollView>
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FF9500",
-  },
-  content: {
-    padding: 20,
-  },
-  form: {
-    flex: 1,
-  },
-  nameInput: {
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    marginBottom: 20,
-    fontSize: 16,
-  },
-  imageUpload: {
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
-    borderRadius: 8,
-    paddingVertical: 30,
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  imageUploadText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: "#8B4513",
-    fontWeight: "bold",
-  },
-  section: {
-    marginBottom: 25,
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 15,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "white",
-  },
-  addButton: {
-    padding: 5,
-  },
-  input: {
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    marginBottom: 10,
-    fontSize: 16,
-  },
-  stepInput: {
-    minHeight: 60,
-    textAlignVertical: "top",
-  },
-  saveButton: {
-    backgroundColor: "#8B4513",
-    borderRadius: 25,
-    paddingVertical: 15,
-    alignItems: "center",
-    marginTop: 20,
-  },
-  saveButtonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-})
+          <Snackbar visible={snackbarVisible} onDismiss={() => setSnackbarVisible(false)} duration={2000}>
+            ¡Receta guardada correctamente!
+          </Snackbar>
+        </SafeAreaView>
+      </Surface>
+    )
+  }
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    safeArea: {
+      flex: 1,
+    },
+    content: {
+      padding: 20,
+      paddingBottom: 40,
+    },
+    nameInput: {
+      backgroundColor: "rgba(255, 255, 255, 0.9)",
+      marginBottom: 20,
+    },
+    imageUploadCard: {
+      backgroundColor: "#FFFFFF",
+      borderRadius: 12,
+      marginBottom: 20,
+    },
+    imageUploadContent: {
+      alignItems: "center",
+      paddingVertical: 32,
+    },
+    imageUploadText: {
+      marginTop: 8,
+      fontWeight: "600",
+    },
+    section: {
+      backgroundColor: "#FFFFFF",
+      borderRadius: 12,
+      marginBottom: 20,
+    },
+    sectionContent: {
+      padding: 20,
+    },
+    sectionHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 16,
+    },
+    sectionTitle: {
+      fontWeight: "bold",
+    },
+    addButton: {
+      margin: 0,
+    },
+    inputsList: {
+      gap: 12,
+    },
+    listInput: {
+      backgroundColor: "#FFFFFF",
+    },
+    saveButton: {
+      borderRadius: 24,
+      marginTop: 8,
+    },
+    saveButtonContent: {
+      paddingVertical: 8,
+    },
+    saveButtonLabel: {
+      fontSize: 16,
+      fontWeight: "600",
+    },
+  })

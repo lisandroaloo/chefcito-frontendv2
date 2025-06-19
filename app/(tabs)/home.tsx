@@ -1,8 +1,13 @@
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
+import { View, StyleSheet, ScrollView } from "react-native"
+import { Card, IconButton, useTheme, Surface, Text } from "react-native-paper"
+import { router } from "expo-router"
+import { SafeAreaView } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
 
+
 export default function HomeScreen() {
+    const theme = useTheme()
+
   const categories = [
     { title: "Recetas sin tac", icon: "restaurant-outline" },
     { title: "Recetas veganas", icon: "leaf-outline" },
@@ -22,82 +27,108 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleProfilePress}>
-          <Ionicons name="person-circle-outline" size={30} color="#8B4513" />
-        </TouchableOpacity>
-      </View>
+      <Surface style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <SafeAreaView style={styles.safeArea}>
+          {/* Header with profile icon */}
+          <View style={styles.header}>
+            <IconButton
+              icon="account-circle"
+              size={28}
+              iconColor={theme.colors.secondary}
+              onPress={handleProfilePress}
+              style={styles.profileButton}
+            />
+          </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Funcionalidades de la app</Text>
+          <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+            {/* Title */}
+            <Text variant="headlineSmall" style={[styles.title, { color: theme.colors.secondary }]}>
+              Funcionalidades de la app
+            </Text>
 
-        <View style={styles.grid}>
-          {categories.map((category, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.categoryCard}
-              onPress={() => handleCategoryPress(category.title)}
-            >
-              <Ionicons name={category.icon as any} size={40} color="#8B4513" style={styles.categoryIcon} />
-              <Text style={styles.categoryText}>{category.title}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  )
-}
+            {/* Categories Grid - Exact Material 3 Cards */}
+            <View style={styles.grid}>
+              {categories.map((category, index) => (
+                <Card
+                  key={index}
+                  style={styles.categoryCard}
+                  mode="elevated"
+                  onPress={() => handleCategoryPress(category.title)}
+                  elevation={2}
+                >
+                  <Card.Content style={styles.cardContent}>
+                    <View style={styles.iconContainer}>
+                      <IconButton
+                        icon={category.icon}
+                        size={32}
+                        iconColor={theme.colors.secondary}
+                        style={styles.categoryIcon}
+                      />
+                    </View>
+                    <Text variant="bodyMedium" style={[styles.categoryText, { color: theme.colors.secondary }]}>
+                      {category.title}
+                    </Text>
+                  </Card.Content>
+                </Card>
+              ))}
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </Surface>
+    )
+  }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FF9500",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    paddingHorizontal: 20,
-    paddingTop: 10,
-  },
-  content: {
-    padding: 20,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#8B4513",
-    textAlign: "center",
-    marginBottom: 30,
-  },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-  },
-  categoryCard: {
-    backgroundColor: "white",
-    borderRadius: 15,
-    padding: 20,
-    width: "48%",
-    marginBottom: 15,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  categoryIcon: {
-    marginBottom: 10,
-  },
-  categoryText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#8B4513",
-    textAlign: "center",
-  },
-})
+    safeArea: {
+      flex: 1,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "flex-end",
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+    },
+    profileButton: {
+      margin: 0,
+    },
+    content: {
+      padding: 20,
+      paddingTop: 0,
+    },
+    title: {
+      textAlign: "center",
+      marginBottom: 32,
+      fontWeight: "600",
+    },
+    grid: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      justifyContent: "space-between",
+      gap: 16,
+    },
+    categoryCard: {
+      width: "47%",
+      backgroundColor: "#FFFFFF",
+      borderRadius: 12,
+    },
+    cardContent: {
+      alignItems: "center",
+      paddingVertical: 24,
+      paddingHorizontal: 16,
+    },
+    iconContainer: {
+      marginBottom: 8,
+    },
+    categoryIcon: {
+      margin: 0,
+    },
+    categoryText: {
+      textAlign: "center",
+      fontWeight: "600",
+      fontSize: 14,
+      lineHeight: 20,
+    },
+  })

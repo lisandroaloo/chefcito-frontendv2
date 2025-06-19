@@ -1,12 +1,16 @@
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
+
+import { View, StyleSheet, ScrollView, Image } from "react-native"
+import { Card, Text, IconButton, useTheme, Surface } from "react-native-paper"
 import { useLocalSearchParams } from "expo-router"
+import { SafeAreaView } from "react-native-safe-area-context"
 import { useRoute } from "@react-navigation/native";
 
 
 export default function RecipeDetailScreen() {
   const route = useRoute();
   const { recipe } = route.params || {};
+  const theme = useTheme()
+
 
   const ingredients = [
     "500g carne molida",
@@ -25,133 +29,168 @@ export default function RecipeDetailScreen() {
     "Servir caliente",
   ]
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <Image
-          source={{ uri: "https://via.placeholder.com/400x200/FF9500/FFFFFF?text=Albondigas" }}
-          style={styles.recipeImage}
-        />
+ return (
+     <Surface style={[styles.container, { backgroundColor: theme.colors.background }]}>
+       <SafeAreaView style={styles.safeArea}>
+         <ScrollView showsVerticalScrollIndicator={false}>
+           {/* Recipe Image */}
+           <Image
+             source={{ uri: "https://via.placeholder.com/400x200/FF9500/FFFFFF?text=Albondigas" }}
+             style={styles.recipeImage}
+           />
 
-        <View style={styles.content}>
-          <View style={styles.header}>
-            <Text style={styles.title}>Albóndigas</Text>
-            <TouchableOpacity>
-              <Ionicons name="heart-outline" size={24} color="#8B4513" />
-            </TouchableOpacity>
-          </View>
+           <View style={styles.content}>
+             {/* Header with title and favorite */}
+             <View style={styles.header}>
+               <Text variant="headlineMedium" style={[styles.title, { color: "#FFFFFF" }]}>
+                 Albóndigas
+               </Text>
+               <IconButton icon="heart-outline" size={24} iconColor="#FFFFFF" onPress={() => {}} />
+             </View>
 
-          <View style={styles.rating}>
-            {[1, 2, 3].map((star) => (
-              <Ionicons key={star} name="star" size={20} color="#FFD700" />
-            ))}
-            {[4, 5].map((star) => (
-              <Ionicons key={star} name="star-outline" size={20} color="#FFD700" />
-            ))}
-          </View>
+             {/* Rating */}
+             <View style={styles.rating}>
+               {[1, 2, 3].map((star) => (
+                 <IconButton key={star} icon="star" size={20} iconColor="#FFD700" style={styles.star} />
+               ))}
+               {[4, 5].map((star) => (
+                 <IconButton key={star} icon="star-outline" size={20} iconColor="#FFD700" style={styles.star} />
+               ))}
+             </View>
 
-          <Text style={styles.description}>Deliciosas albóndigas caseras perfectas para cualquier ocasión.</Text>
+             {/* Description */}
+             <Text variant="bodyLarge" style={[styles.description, { color: "#FFFFFF" }]}>
+               Deliciosas albóndigas caseras perfectas para cualquier ocasión.
+             </Text>
 
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Ingredientes</Text>
-            <View style={styles.ingredientsList}>
-              {ingredients.map((ingredient, index) => (
-                <View key={index} style={styles.ingredientItem}>
-                  <Text style={styles.ingredientText}>• {ingredient}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
+             {/* Ingredients Section */}
+             <Card style={styles.section} mode="elevated" elevation={2}>
+               <Card.Content style={styles.sectionContent}>
+                 <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.secondary }]}>
+                   Ingredientes
+                 </Text>
+                 <View style={styles.ingredientsList}>
+                   {ingredients.map((ingredient, index) => (
+                     <View key={index} style={styles.ingredientItem}>
+                       <Text variant="bodyMedium" style={styles.ingredientText}>
+                         • {ingredient}
+                       </Text>
+                     </View>
+                   ))}
+                 </View>
+               </Card.Content>
+             </Card>
 
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Preparación</Text>
-            <View style={styles.stepsList}>
-              {steps.map((step, index) => (
-                <View key={index} style={styles.stepItem}>
-                  <Text style={styles.stepNumber}>{index + 1}.</Text>
-                  <Text style={styles.stepText}>{step}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  )
-}
+             {/* Steps Section */}
+             <Card style={styles.section} mode="elevated" elevation={2}>
+               <Card.Content style={styles.sectionContent}>
+                 <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.secondary }]}>
+                   Paso a paso
+                 </Text>
+                 <View style={styles.stepsList}>
+                   {steps.map((step, index) => (
+                     <View key={index} style={styles.stepItem}>
+                       <View style={styles.stepNumberContainer}>
+                         <Text variant="bodyMedium" style={[styles.stepNumber, { color: theme.colors.secondary }]}>
+                           {index + 1}
+                         </Text>
+                       </View>
+                       <Text variant="bodyMedium" style={styles.stepText}>
+                         {step}
+                       </Text>
+                     </View>
+                   ))}
+                 </View>
+               </Card.Content>
+             </Card>
+           </View>
+         </ScrollView>
+       </SafeAreaView>
+     </Surface>
+   )
+ }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FF9500",
-  },
-  recipeImage: {
-    width: "100%",
-    height: 200,
-  },
-  content: {
-    padding: 20,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "white",
-  },
-  rating: {
-    flexDirection: "row",
-    marginBottom: 15,
-  },
-  description: {
-    fontSize: 16,
-    color: "white",
-    marginBottom: 20,
-  },
-  section: {
-    marginBottom: 25,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "white",
-    marginBottom: 10,
-  },
-  ingredientsList: {
-    backgroundColor: "white",
-    borderRadius: 10,
-    padding: 15,
-  },
-  ingredientItem: {
-    marginBottom: 5,
-  },
-  ingredientText: {
-    fontSize: 14,
-    color: "#333",
-  },
-  stepsList: {
-    backgroundColor: "white",
-    borderRadius: 10,
-    padding: 15,
-  },
-  stepItem: {
-    flexDirection: "row",
-    marginBottom: 10,
-  },
-  stepNumber: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#8B4513",
-    marginRight: 10,
-    minWidth: 20,
-  },
-  stepText: {
-    fontSize: 14,
-    color: "#333",
-    flex: 1,
-  },
-})
+ const styles = StyleSheet.create({
+   container: {
+     flex: 1,
+   },
+   safeArea: {
+     flex: 1,
+   },
+   recipeImage: {
+     width: "100%",
+     height: 200,
+   },
+   content: {
+     padding: 20,
+   },
+   header: {
+     flexDirection: "row",
+     justifyContent: "space-between",
+     alignItems: "center",
+     marginBottom: 8,
+   },
+   title: {
+     fontWeight: "bold",
+   },
+   rating: {
+     flexDirection: "row",
+     marginBottom: 16,
+     marginLeft: -8,
+   },
+   star: {
+     margin: 0,
+   },
+   description: {
+     marginBottom: 24,
+     lineHeight: 24,
+   },
+   section: {
+     marginBottom: 16,
+     backgroundColor: "#FFFFFF",
+     borderRadius: 12,
+   },
+   sectionContent: {
+     padding: 20,
+   },
+   sectionTitle: {
+     fontWeight: "bold",
+     marginBottom: 16,
+   },
+   ingredientsList: {
+     gap: 8,
+   },
+   ingredientItem: {
+     paddingVertical: 2,
+   },
+   ingredientText: {
+     fontSize: 14,
+     lineHeight: 20,
+   },
+   stepsList: {
+     gap: 12,
+   },
+   stepItem: {
+     flexDirection: "row",
+     alignItems: "flex-start",
+   },
+   stepNumberContainer: {
+     width: 24,
+     height: 24,
+     borderRadius: 12,
+     backgroundColor: "#F5F5F5",
+     justifyContent: "center",
+     alignItems: "center",
+     marginRight: 12,
+     marginTop: 2,
+   },
+   stepNumber: {
+     fontSize: 12,
+     fontWeight: "bold",
+   },
+   stepText: {
+     flex: 1,
+     fontSize: 14,
+     lineHeight: 20,
+   },
+ })
