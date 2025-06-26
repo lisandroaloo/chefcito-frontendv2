@@ -11,7 +11,7 @@ export function useRecipes(category: string) {
     const fetchRecipes = async () => {
       setLoading(true)
       try {
-        const res = await fetch(`https://tu-backend.com/api/recipes?category=${encodeURIComponent(category)}`)
+        const res = await fetch("http://localhost:8080/api/recipe")
         if (!res.ok) throw new Error("Error en la respuesta del servidor")
         const data = await res.json()
         setRecipes(data)

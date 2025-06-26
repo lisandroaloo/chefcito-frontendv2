@@ -113,7 +113,7 @@ return (
       </Stack>
       <StatusBar style="light" />
     </PaperProvider>
-        </AuthProvider>
+            </AuthProvider>
 
   )
 }

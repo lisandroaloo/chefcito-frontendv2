@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 
 
 export async function login(username: string, password: string): Promise<void> {
-  const response = await fetch("http://<TU_BACKEND_URL>/api/login", {
+  const response = await fetch("http://localhost:8080/api/user/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -17,8 +17,7 @@ export async function login(username: string, password: string): Promise<void> {
 
   const data = await response.json()
 
-  await AsyncStorage.setItem("token", data.token)
-  await AsyncStorage.setItem("user", JSON.stringify(data.user))
+  await AsyncStorage.setItem("user", JSON.stringify(data.us_alias))
 
   return data.user
 }

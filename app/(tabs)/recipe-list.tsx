@@ -14,11 +14,8 @@ export default function RecipeListScreen() {
   const { category } = route.params || {}
 
   const { recipes, loading, error } = useRecipes(category)
-  const [searchQuery, setSearchQuery] = useState("")
 
-  const filteredRecipes = recipes.filter((recipe: any) =>
-    recipe.name?.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+
 
   const handleRecipePress = (recipe: any) => {
     navigation.navigate("recipe-detail", { recipe })
@@ -30,8 +27,6 @@ export default function RecipeListScreen() {
         <View style={styles.searchContainer}>
           <Searchbar
             placeholder="Buscar recetas"
-            onChangeText={setSearchQuery}
-            value={searchQuery}
             style={styles.searchbar}
           />
         </View>
@@ -39,14 +34,11 @@ export default function RecipeListScreen() {
         <ScrollView contentContainerStyle={styles.content}>
           {loading && <Text style={{ color: theme.colors.secondary, textAlign: "center" }}>Cargando...</Text>}
           {error && <Text style={{ color: "red", textAlign: "center" }}>Error al cargar recetas</Text>}
-          {!loading && !error && filteredRecipes.length === 0 && (
-            <Text style={{ color: theme.colors.secondary, textAlign: "center" }}>
-              No se encontraron recetas para "{searchQuery}"
-            </Text>
-          )}
+
+
 
           <View style={styles.grid}>
-            {filteredRecipes.map((recipe: any, index: number) => (
+            {recipes.map((recipe: any, index: number) => (
               <Card
                 key={index}
                 style={styles.recipeCard}
@@ -63,7 +55,7 @@ export default function RecipeListScreen() {
                     />
                   </View>
                   <Text variant="bodyMedium" style={[styles.recipeTitle, { color: theme.colors.secondary }]}>
-                    {recipe.name}
+                    {recipe.re_title}
                   </Text>
                 </Card.Content>
               </Card>
