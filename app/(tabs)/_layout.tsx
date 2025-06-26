@@ -6,6 +6,8 @@ import * as SplashScreen from "expo-splash-screen"
 import { StatusBar } from "expo-status-bar"
 import { useEffect } from "react"
 import { MD3LightTheme, MD3DarkTheme, PaperProvider } from "react-native-paper"
+import { AuthProvider } from "../context/AuthContext" // ajustá el path si hace falta
+
 
 
 import { Stack } from "expo-router"
@@ -57,6 +59,7 @@ export default function RootLayout() {
   }
 
 return (
+        <AuthProvider>
     <PaperProvider theme={chefcitoTheme}>
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -110,5 +113,7 @@ return (
       </Stack>
       <StatusBar style="light" />
     </PaperProvider>
+        </AuthProvider>
+
   )
 }

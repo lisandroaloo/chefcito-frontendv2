@@ -3,10 +3,13 @@ import { Card, IconButton, useTheme, Surface, Text } from "react-native-paper"
 import { router } from "expo-router"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
+import { AuthContext } from "../context/AuthContext"
 
 
 export default function HomeScreen() {
     const theme = useTheme()
+
+    const { user } = useContext(AuthContext)
 
   const categories = [
     { title: "Recetas sin tac", icon: "restaurant-outline" },
@@ -23,8 +26,13 @@ export default function HomeScreen() {
   }
 
   const handleProfilePress = () => {
-    navigation.navigate("profile")
+    if (user) {
+      navigation.navigate("profile")
+    } else {
+      navigation.navigate("login")
+    }
   }
+
 
   return (
       <Surface style={[styles.container, { backgroundColor: theme.colors.background }]}>

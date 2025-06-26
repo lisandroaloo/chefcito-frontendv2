@@ -6,40 +6,41 @@ import { TextInput, Button, useTheme, Surface, Text } from "react-native-paper"
 import { router } from "expo-router"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Image } from 'react-native';
-
 import { useNavigation } from "@react-navigation/native"
-
-
+import { useAuth } from "../context/AuthContext"
 
 export default function LoginScreen() {
-  const [alias, setAlias] = useState("")
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const navigation = useNavigation()
-    const theme = useTheme()
+  const theme = useTheme()
+  const { login } = useAuth()
 
-
-  const handleLogin = () => {
-      navigation.navigate("home") // el nombre de la ruta registrada en el stack
-   }
+  const handleLogin = async () => {
+      try {
+        await login(username, password)
+        navigation.navigate("home")
+      } catch (error) {
+        console.error("Login fallido:", error.message)
+        alert("username o contraseña incorrectos.")
+      }
+    }
 
 
   return (
     <Surface style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.content}>
-          {/* Logo Section - Exact match to Figma */}
           <View style={styles.logoContainer}>
             <View style={styles.logoWrapper}>
              <Image source={require("../../assets/chefcito-logo.png")} style={styles.logo} resizeMode="contain" />
             </View>
           </View>
-
-          {/* Form Section - Exact Material 3 styling */}
           <View style={styles.formContainer}>
             <TextInput
-              label="Alias"
-              value={alias}
-              onChangeText={setAlias}
+              label="Usuario"
+              value={username}
+              onChangeText={setUsername}
               mode="filled"
               style={styles.textInput}
               contentStyle={styles.inputContent}
