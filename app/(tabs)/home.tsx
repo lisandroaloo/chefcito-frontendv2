@@ -1,13 +1,8 @@
 import { View, StyleSheet, ScrollView, ImageBackground } from "react-native"
 import { Card, IconButton, useTheme, Surface, Text } from "react-native-paper"
-import { router } from "expo-router"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
-import { createContext, useContext, useState } from "react"
-import { useAuth } from '../context/AuthContext'
 import React from "react"
-import { Image } from 'react-native'
-import { black } from "react-native-paper/lib/typescript/styles/themes/v2/colors"
 
 
 export default function HomeScreen() {

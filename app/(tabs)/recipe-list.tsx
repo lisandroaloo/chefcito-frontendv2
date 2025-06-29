@@ -2,23 +2,61 @@
 
 import { useState } from "react"
 import { View, StyleSheet, ScrollView } from "react-native"
-import { Card, IconButton, useTheme, Surface, Text, Searchbar } from "react-native-paper"
+import { Card, IconButton, useTheme, Surface, Text, Searchbar, Menu, Divider, Button } from "react-native-paper"
 import { useRoute, useNavigation } from "@react-navigation/native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useRecipes } from "../hooks/useRecipes"
+import { useRouter } from "expo-router"
+import React from "react"
 
 export default function RecipeListScreen() {
   const theme = useTheme()
   const route = useRoute()
-  const navigation = useNavigation()
+  const router = useRouter()
+  const [ingredientFilter, setIngredientFilter] = useState<string | null>(null)
+  const [menuVisible, setMenuVisible] = useState(false)
   const { category } = route.params || {}
 
   const { recipes, loading, error } = useRecipes(category)
 
+  const [searchQuery, setSearchQuery] = useState("")
 
+// Lista única y ordenada de ingredientes (en minúsculas)
+  const allIngredients2 = Array.from(
+    new Set(
+      recipes.flatMap((r) =>
+        r.ingredients
+          ? r.ingredients.map((ing: string) => ing.toLowerCase())
+          : []
+      )
+    )
+  ).sort()
+
+  const allIngredients = ["tomate", "cebolla", "ajo", "pollo", "queso", "lechuga"]
+
+
+  // Filtro por título (palabras que empiezan con searchQuery)
+  const filteredByTitle = recipes.filter((recipe) => {
+    if (!recipe.re_title) return false
+    const words = recipe.re_title.toLowerCase().split(" ")
+    return words.some((word: string) =>
+      word.startsWith(searchQuery.toLowerCase())
+    )
+  })
+
+  // Filtro combinado por ingrediente si hay filtro activo
+  const filteredRecipes = ingredientFilter
+    ? filteredByTitle.filter(
+        (recipe) =>
+          recipe.ingredients &&
+          recipe.ingredients.some(
+            (ing: string) => ing.toLowerCase() === ingredientFilter.toLowerCase()
+          )
+      )
+    : filteredByTitle
 
   const handleRecipePress = (recipe: any) => {
-    navigation.navigate("recipe-detail", { recipe })
+    router.push(`/recipe-detail/${recipe.re_id}`)
   }
 
   return (
@@ -27,18 +65,61 @@ export default function RecipeListScreen() {
         <View style={styles.searchContainer}>
           <Searchbar
             placeholder="Buscar recetas"
+            onChangeText={setSearchQuery}
+            value={searchQuery}
             style={styles.searchbar}
           />
+          {/* Filtro por ingrediente con Menu */}
+          <View style={{ marginTop: 8, zIndex: 10 }}>
+            <Menu
+              visible={menuVisible}
+              onDismiss={() => setMenuVisible(false)}
+              anchor={
+                <Button
+                  mode="outlined"
+                  onPress={() => setMenuVisible(true)}
+                  style={{ justifyContent: "center" }}
+                >
+                  {ingredientFilter ? ingredientFilter : "Filtrar por ingrediente"}
+                </Button>
+              }
+            >
+              <Menu.Item
+                onPress={() => {
+                  setIngredientFilter(null)
+                  setMenuVisible(false)
+                }}
+                title="Todos"
+              />
+              <Divider />
+              {allIngredients.map((ing) => (
+                <Menu.Item
+                  key={ing}
+                  onPress={() => {
+                    setIngredientFilter(ing)
+                    setMenuVisible(false)
+                  }}
+                  title={ing}
+                />
+              ))}
+            </Menu>
+          </View>
         </View>
 
         <ScrollView contentContainerStyle={styles.content}>
-          {loading && <Text style={{ color: theme.colors.secondary, textAlign: "center" }}>Cargando...</Text>}
-          {error && <Text style={{ color: "red", textAlign: "center" }}>Error al cargar recetas</Text>}
-
-
+          {loading && (
+            <Text style={{ color: theme.colors.secondary, textAlign: "center" }}>
+              Cargando...
+            </Text>
+          )}
+          {error && (
+            <Text style={{ color: "red", textAlign: "center" }}>
+              Error al cargar recetas
+            </Text>
+          )}
 
           <View style={styles.grid}>
-            {recipes.map((recipe: any, index: number) => (
+            {filteredRecipes.map((recipe: any, index: number) => (
               <Card
                 key={index}
                 style={styles.recipeCard}
@@ -54,7 +135,10 @@ export default function RecipeListScreen() {
                       style={styles.recipeIcon}
                     />
                   </View>
-                  <Text variant="bodyMedium" style={[styles.recipeTitle, { color: theme.colors.secondary }]}>
+                  <Text
+                    variant="bodyMedium"
+                    style={[styles.recipeTitle, { color: theme.colors.secondary }]}
+                  >
                     {recipe.re_title}
                   </Text>
                 </Card.Content>

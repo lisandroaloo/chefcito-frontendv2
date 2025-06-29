@@ -6,6 +6,7 @@ import { TextInput, Button, useTheme, Surface, Text } from "react-native-paper"
 import { router } from "expo-router"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Image } from 'react-native';
+import React from "react"
 
 
 

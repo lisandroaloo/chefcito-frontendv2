@@ -3,35 +3,36 @@
 import { useState } from "react"
 import { View, StyleSheet, ScrollView } from "react-native"
 import { Card, Text, IconButton, Button, useTheme, Surface, Avatar, Dialog, Portal } from "react-native-paper"
-import { router } from "expo-router"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { useNavigation } from "@react-navigation/native"
 import { useAuth } from "../context/AuthContext"
 import React from "react"
+import { useRouter } from "expo-router"
 
 export default function ProfileScreen() {
- const [userRecipes, setUserRecipes] = useState(["Receta 1", "Receta 2", "Receta 3"])
-   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false)
-   const [recipeToDelete, setRecipeToDelete] = useState<number | null>(null)
-   const theme = useTheme()
-   const { user, logout } = useAuth()
+  const [userRecipes, setUserRecipes] = useState(["Receta 1", "Receta 2", "Receta 3"])
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false)
+  const [recipeToDelete, setRecipeToDelete] = useState<number | null>(null)
+  const theme = useTheme()
+  const router = useRouter()
 
-   const handleDeleteRecipe = (index: number) => {
-     setRecipeToDelete(index)
-     setDeleteDialogVisible(true)
-   }
+  const { user, logout } = useAuth()
 
-   const confirmDelete = () => {
-     if (recipeToDelete !== null) {
-       const newRecipes = userRecipes.filter((_, i) => i !== recipeToDelete)
-       setUserRecipes(newRecipes)
-     }
-     setDeleteDialogVisible(false)
-     setRecipeToDelete(null)
-   }
+  const handleDeleteRecipe = (index: number) => {
+    setRecipeToDelete(index)
+    setDeleteDialogVisible(true)
+  }
+
+  const confirmDelete = () => {
+    if (recipeToDelete !== null) {
+      const newRecipes = userRecipes.filter((_, i) => i !== recipeToDelete)
+      setUserRecipes(newRecipes)
+    }
+    setDeleteDialogVisible(false)
+    setRecipeToDelete(null)
+  }
 
   const handleCreateRecipe = () => {
-    navigation.navigate("create-recipe")
+    router.replace("/create-recipe")
   }
 
   const handleEditRecipe = () => {
@@ -161,83 +162,83 @@ export default function ProfileScreen() {
       </SafeAreaView>
     </Surface>
   )
- }
+}
 
- const styles = StyleSheet.create({
-   container: {
-     flex: 1,
-   },
-   safeArea: {
-     flex: 1,
-   },
-   content: {
-     padding: 20,
-     paddingBottom: 40,
-   },
-   profileSection: {
-     alignItems: "center",
-     marginBottom: 32,
-   },
-   avatar: {
-     marginBottom: 16,
-   },
-   username: {
-     fontWeight: "bold",
-     marginBottom: 4,
-   },
-   subtitle: {
-     fontSize: 16,
-   },
-   recipesSection: {
-     marginBottom: 32,
-     gap: 12,
-   },
-   recipeCard: {
-     backgroundColor: "#FFFFFF",
-     borderRadius: 12,
-   },
-   recipeCardContent: {
-     flexDirection: "row",
-     justifyContent: "space-between",
-     alignItems: "center",
-     paddingVertical: 12,
-     paddingHorizontal: 16,
-   },
-   recipeInfo: {
-     flexDirection: "row",
-     alignItems: "center",
-     flex: 1,
-   },
-   recipeIconContainer: {
-     width: 32,
-     height: 32,
-     borderRadius: 16,
-     backgroundColor: "#FFF3E0",
-     justifyContent: "center",
-     alignItems: "center",
-     marginRight: 12,
-   },
-   recipeIcon: {
-     margin: 0,
-   },
-   recipeName: {
-     fontWeight: "600",
-     fontSize: 16,
-   },
-   deleteButton: {
-     margin: 0,
-   },
-   buttonsSection: {
-     gap: 16,
-   },
-   actionButton: {
-     borderRadius: 24,
-   },
-   buttonContent: {
-     paddingVertical: 8,
-   },
-   buttonLabel: {
-     fontSize: 16,
-     fontWeight: "600",
-   },
- })
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  content: {
+    padding: 20,
+    paddingBottom: 40,
+  },
+  profileSection: {
+    alignItems: "center",
+    marginBottom: 32,
+  },
+  avatar: {
+    marginBottom: 16,
+  },
+  username: {
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 16,
+  },
+  recipesSection: {
+    marginBottom: 32,
+    gap: 12,
+  },
+  recipeCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+  },
+  recipeCardContent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  recipeInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  recipeIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#FFF3E0",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  recipeIcon: {
+    margin: 0,
+  },
+  recipeName: {
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  deleteButton: {
+    margin: 0,
+  },
+  buttonsSection: {
+    gap: 16,
+  },
+  actionButton: {
+    borderRadius: 24,
+  },
+  buttonContent: {
+    paddingVertical: 8,
+  },
+  buttonLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+})
