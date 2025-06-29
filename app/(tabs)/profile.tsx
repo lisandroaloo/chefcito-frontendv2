@@ -6,12 +6,15 @@ import { Card, Text, IconButton, Button, useTheme, Surface, Avatar, Dialog, Port
 import { router } from "expo-router"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
+import { useAuth } from "../context/AuthContext"
+import React from "react"
 
 export default function ProfileScreen() {
  const [userRecipes, setUserRecipes] = useState(["Receta 1", "Receta 2", "Receta 3"])
    const [deleteDialogVisible, setDeleteDialogVisible] = useState(false)
    const [recipeToDelete, setRecipeToDelete] = useState<number | null>(null)
    const theme = useTheme()
+   const { user, logout } = useAuth()
 
    const handleDeleteRecipe = (index: number) => {
      setRecipeToDelete(index)
@@ -35,94 +38,129 @@ export default function ProfileScreen() {
     navigation.navigate("create-recipe")
   }
 
+  const handleLogout = () => {
+    logout()
+    router.replace("/")
+  }
+
   return (
-     <Surface style={[styles.container, { backgroundColor: theme.colors.background }]}>
-       <SafeAreaView style={styles.safeArea}>
-         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-           {/* Profile Section */}
-           <View style={styles.profileSection}>
-             <Avatar.Image
-               size={120}
-               source={{ uri: "https://via.placeholder.com/120x120/4CAF50/FFFFFF?text=👨‍🍳" }}
-               style={styles.avatar}
-             />
-             <Text variant="headlineMedium" style={[styles.username, { color: "#FFFFFF" }]}>
-               Alias
-             </Text>
-             <Text variant="bodyLarge" style={[styles.subtitle, { color: "rgba(255, 255, 255, 0.8)" }]}>
-               Nuestros recetarios
-             </Text>
-           </View>
+    <Surface style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Profile Section */}
+          <View style={styles.profileSection}>
+            <Avatar.Image
+              size={120}
+              source={{ uri: 'https://via.placeholder.com/120x120/4CAF50/FFFFFF?text=👨‍🍳' }}
+              style={styles.avatar}
+            />
+            <Text
+              variant="headlineMedium"
+              style={[styles.username, { color: '#FFFFFF' }]}
+            >
+              {user}
+            </Text>
+            <Text
+              variant="bodyLarge"
+              style={[styles.subtitle, { color: 'rgba(255, 255, 255, 0.8)' }]}
+            >
+              Nuestros recetarios
+            </Text>
+          </View>
 
-           {/* Recipes List */}
-           <View style={styles.recipesSection}>
-             {userRecipes.map((recipe, index) => (
-               <Card key={index} style={styles.recipeCard} mode="elevated" elevation={1}>
-                 <Card.Content style={styles.recipeCardContent}>
-                   <View style={styles.recipeInfo}>
-                     <View style={styles.recipeIconContainer}>
-                       <IconButton
-                         icon="silverware-fork-knife"
-                         size={20}
-                         iconColor={theme.colors.secondary}
-                         style={styles.recipeIcon}
-                       />
-                     </View>
-                     <Text variant="bodyMedium" style={[styles.recipeName, { color: theme.colors.secondary }]}>
-                       {recipe}
-                     </Text>
-                   </View>
-                   <IconButton
-                     icon="close"
-                     size={20}
-                     iconColor="#FF5252"
-                     onPress={() => handleDeleteRecipe(index)}
-                     style={styles.deleteButton}
-                   />
-                 </Card.Content>
-               </Card>
-             ))}
-           </View>
+          {/* Recipes List */}
+          <View style={styles.recipesSection}>
+            {userRecipes.map((recipe, index) => (
+              <Card
+                key={index}
+                style={styles.recipeCard}
+                mode="elevated"
+                elevation={1}
+              >
+                <Card.Content style={styles.recipeCardContent}>
+                  <View style={styles.recipeInfo}>
+                    <View style={styles.recipeIconContainer}>
+                      <IconButton
+                        icon="silverware-fork-knife"
+                        size={20}
+                        iconColor={theme.colors.secondary}
+                        style={styles.recipeIcon}
+                      />
+                    </View>
+                    <Text
+                      variant="bodyMedium"
+                      style={[styles.recipeName, { color: theme.colors.secondary }]}
+                    >
+                      {recipe}
+                    </Text>
+                  </View>
+                  <IconButton
+                    icon="close"
+                    size={20}
+                    iconColor="#FF5252"
+                    onPress={() => handleDeleteRecipe(index)}
+                    style={styles.deleteButton}
+                  />
+                </Card.Content>
+              </Card>
+            ))}
+          </View>
 
-           {/* Action Buttons */}
-           <View style={styles.buttonsSection}>
-             <Button
-               mode="contained"
-               onPress={handleCreateRecipe}
-               style={[styles.actionButton, { backgroundColor: theme.colors.secondary }]}
-               contentStyle={styles.buttonContent}
-               labelStyle={styles.buttonLabel}
-             >
-               Crear receta
-             </Button>
+          {/* Action Buttons */}
+          <View style={styles.buttonsSection}>
+            <Button
+              mode="contained"
+              onPress={handleCreateRecipe}
+              style={[styles.actionButton, { backgroundColor: theme.colors.secondary }]}
+              contentStyle={styles.buttonContent}
+              labelStyle={styles.buttonLabel}
+            >
+              Crear receta
+            </Button>
 
-             <Button
-               mode="contained"
-               onPress={handleEditRecipe}
-               style={[styles.actionButton, { backgroundColor: theme.colors.secondary }]}
-               contentStyle={styles.buttonContent}
-               labelStyle={styles.buttonLabel}
-             >
-               Editar receta
-             </Button>
-           </View>
-         </ScrollView>
+            <Button
+              mode="contained"
+              onPress={handleEditRecipe}
+              style={[styles.actionButton, { backgroundColor: theme.colors.secondary }]}
+              contentStyle={styles.buttonContent}
+              labelStyle={styles.buttonLabel}
+            >
+              Editar receta
+            </Button>
 
-         <Portal>
-           <Dialog visible={deleteDialogVisible} onDismiss={() => setDeleteDialogVisible(false)}>
-             <Dialog.Title>Eliminar receta</Dialog.Title>
-             <Dialog.Content>
-               <Text variant="bodyMedium">¿Estás seguro de que quieres eliminar esta receta?</Text>
-             </Dialog.Content>
-             <Dialog.Actions>
-               <Button onPress={() => setDeleteDialogVisible(false)}>Cancelar</Button>
-               <Button onPress={confirmDelete}>Eliminar</Button>
-             </Dialog.Actions>
-           </Dialog>
-         </Portal>
-       </SafeAreaView>
-     </Surface>
-   )
+            <Button
+              mode="contained"
+              onPress={handleLogout}
+              style={[styles.actionButton, { backgroundColor: theme.colors.secondary }]}
+              contentStyle={styles.buttonContent}
+              labelStyle={styles.buttonLabel}
+            >
+              Log out
+            </Button>
+          </View>
+        </ScrollView>
+
+        <Portal>
+          <Dialog
+            visible={deleteDialogVisible}
+            onDismiss={() => setDeleteDialogVisible(false)}
+          >
+            <Dialog.Title>Eliminar receta</Dialog.Title>
+            <Dialog.Content>
+              <Text variant="bodyMedium">¿Estás seguro de que quieres eliminar esta receta?</Text>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={() => setDeleteDialogVisible(false)}>Cancelar</Button>
+              <Button onPress={confirmDelete}>Eliminar</Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+      </SafeAreaView>
+    </Surface>
+  )
  }
 
  const styles = StyleSheet.create({

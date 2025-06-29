@@ -14,8 +14,9 @@ export const AuthProvider = ({ children }) => {
       setUser(storedUser)
       setLoading(false)
     }
+    console.log("LOG")
     loadUser()
-  }, [])
+  }, [user])
 
   const login = async (alias: string, password: string) => {
     const user = await apiLogin(alias, password)

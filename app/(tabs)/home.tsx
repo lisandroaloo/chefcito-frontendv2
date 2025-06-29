@@ -1,25 +1,25 @@
-import { View, StyleSheet, ScrollView } from "react-native"
+import { View, StyleSheet, ScrollView, ImageBackground } from "react-native"
 import { Card, IconButton, useTheme, Surface, Text } from "react-native-paper"
 import { router } from "expo-router"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
 import { createContext, useContext, useState } from "react"
 import { useAuth } from '../context/AuthContext'
+import React from "react"
+import { Image } from 'react-native'
+import { black } from "react-native-paper/lib/typescript/styles/themes/v2/colors"
 
 
 export default function HomeScreen() {
     const theme = useTheme()
 
-    const { user } = useAuth()
-
-
   const categories = [
-    { title: "Recetas sin tac", icon: "restaurant-outline" },
-    { title: "Recetas veganas", icon: "leaf-outline" },
-    { title: "Postres", icon: "ice-cream-outline" },
-    { title: "Nos apoyaron", icon: "heart-outline" },
-    { title: "Hamburguesas", icon: "fast-food-outline" },
-    { title: "Sin", icon: "close-circle-outline" },
+    { title: 'Sin tacc', icon: 'restaurant-outline', image: require('../../assets/sintacc.jpeg') },
+    { title: 'Veganas', icon: 'leaf-outline', image: require('../../assets/vegano.jpeg') },
+    { title: 'Populares', icon: 'ice-cream-outline', image: require('../../assets/popular.jpeg') },
+    { title: 'Vegetarianas', icon: 'heart-outline', image: require('../../assets/vegetariano.jpeg') },
+    { title: 'Hamburguesas', icon: 'fast-food-outline', image: require('../../assets/hamburguesa.jpeg') },
+    { title: 'Sin lactosa', icon: 'close-circle-outline', image: require('../../assets/lactosa.jpeg') },
   ]
     const navigation = useNavigation()
 
@@ -27,45 +27,37 @@ export default function HomeScreen() {
         navigation.navigate("recipe-list", { category });
   }
 
-  const handleProfilePress = () => {
-      console.log(user)
-    if (user) {
-      navigation.navigate("profile")
-    } else {
-      navigation.navigate("index")
-    }
-  }
 
 
   return (
-      <Surface style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <SafeAreaView style={styles.safeArea}>
-          {/* Header with profile icon */}
-          <View style={styles.header}>
-            <IconButton
-              icon="account-circle"
-              size={28}
-              iconColor={theme.colors.secondary}
-              onPress={handleProfilePress}
-              style={styles.profileButton}
-            />
-          </View>
+    <Surface style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <SafeAreaView style={styles.safeArea}>
 
-          <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-            {/* Title */}
-            <Text variant="headlineSmall" style={[styles.title, { color: theme.colors.secondary }]}>
-              Funcionalidades de la app
-            </Text>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Title */}
+          <Text
+            variant="headlineSmall"
+            style={[styles.title, { color: theme.colors.secondary }]}
+          >
+            Funcionalidades de la app
+          </Text>
 
-            {/* Categories Grid - Exact Material 3 Cards */}
-            <View style={styles.grid}>
-              {categories.map((category, index) => (
-                <Card
-                  key={index}
-                  style={styles.categoryCard}
-                  mode="elevated"
-                  onPress={() => handleCategoryPress(category.title)}
-                  elevation={2}
+          {/* Categories Grid - Exact Material 3 Cards */}
+          <View style={styles.grid}>
+            {categories.map((category, index) => (
+              <Card
+                key={index}
+                style={styles.categoryCard}
+                mode="elevated"
+                onPress={() => handleCategoryPress(category.title)}
+                elevation={2}
+              >
+                <ImageBackground
+                  source={category.image}
+                  style={{ width: '100%', height: '100%' }}
                 >
                   <Card.Content style={styles.cardContent}>
                     <View style={styles.iconContainer}>
@@ -73,20 +65,24 @@ export default function HomeScreen() {
                         icon={category.icon}
                         size={32}
                         iconColor={theme.colors.secondary}
-                        style={styles.categoryIcon}
+                        style={[styles.categoryIcon, { opacity: 0 }]}
                       />
                     </View>
-                    <Text variant="bodyMedium" style={[styles.categoryText, { color: theme.colors.secondary }]}>
+                    <Text
+                      variant="bodyMedium"
+                      style={[styles.categoryText, { color: "black", textShadowColor: 'white', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 }]}
+                    >
                       {category.title}
                     </Text>
                   </Card.Content>
-                </Card>
-              ))}
-            </View>
-          </ScrollView>
-        </SafeAreaView>
-      </Surface>
-    )
+                </ImageBackground>
+              </Card>
+            ))}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </Surface>
+  )
   }
 
   const styles = StyleSheet.create({
@@ -124,11 +120,13 @@ export default function HomeScreen() {
       width: "47%",
       backgroundColor: "#FFFFFF",
       borderRadius: 12,
+      // height: "50%"
     },
     cardContent: {
       alignItems: "center",
       paddingVertical: 24,
       paddingHorizontal: 16,
+      height: "100%"
     },
     iconContainer: {
       marginBottom: 8,
