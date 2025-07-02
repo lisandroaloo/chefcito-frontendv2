@@ -52,10 +52,10 @@ export default function EditRecipeScreen() {
         setRecipeName(recipe.re_title)
         setIngredients(recipe.ingredients || [""])
         setSteps(recipe.steps || [""])
-        setIsVegan(recipe.vegan)
-        setIsVegetarian(recipe.vegetarian)
-        setIsCeliac(recipe.celiac)
-        setIsLactoseFree(recipe.lactose)
+        setIsVegan(recipe.re_suitable_for_vegan)
+        setIsVegetarian(recipe.re_suitable_for_vegetarian)
+        setIsCeliac(recipe.re_suitable_for_celiac)
+        setIsLactoseFree(recipe.re_suitable_for_lactose_intolerant)
       }
     } else if (!selectedRecipeId) {
       // If no recipe is selected, clear the form
@@ -83,13 +83,13 @@ export default function EditRecipeScreen() {
 
     const updatedRecipe: IRecipe = {
       ...editingRecipe,
-      title: recipeName,
-      ingredients: ingredients.filter((i) => i.trim() !== ""),
-      steps: steps.filter((s) => s.trim() !== ""),
-      vegan: isVegan,
-      vegetarian: isVegetarian,
-      celiac: isCeliac,
-      lactose: isLactoseFree,
+      re_title: recipeName,
+      ingredients: ingredients.filter((i) => i.trim() !== ''),
+      steps: steps.filter((s) => s.trim() !== ''),
+      re_suitable_for_vegan: isVegan,
+      re_suitable_for_vegetarian: isVegetarian,
+      re_suitable_for_celiac: isCeliac,
+      re_suitable_for_lactose_intolerant: isLactoseFree,
     }
 
     try {
