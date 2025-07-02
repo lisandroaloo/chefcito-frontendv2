@@ -37,7 +37,7 @@ export default function HomeScreen() {
             variant="headlineSmall"
             style={[styles.title, { color: theme.colors.secondary }]}
           >
-            Funcionalidades de la app
+            CATEGORIAS
           </Text>
 
           {/* Categories Grid - Exact Material 3 Cards */}
