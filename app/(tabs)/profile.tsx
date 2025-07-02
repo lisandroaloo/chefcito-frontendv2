@@ -36,7 +36,7 @@ export default function ProfileScreen() {
   }
 
   const handleEditRecipe = () => {
-    navigation.navigate("create-recipe")
+    router.replace("/edit-recipe")
   }
 
   const handleLogout = () => {
