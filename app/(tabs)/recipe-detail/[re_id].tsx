@@ -16,7 +16,7 @@ export default function RecipeDetailScreen() {
   useEffect(() => {
     const fetchFavorito = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/pending-recipe-x-user/user/1/recipe/${re_id}`);
+        const res = await fetch(`https://chefcito-backtend-production.up.railway.app/api/pending-recipe-x-user/user/1/recipe/${re_id}`);
 
         if (res.status === 200) {
           const data = await res.json();
@@ -49,14 +49,14 @@ export default function RecipeDetailScreen() {
     try {
       if (favorito && rxuId) {
         // Si ya está en favoritos, eliminarlo
-        await fetch(`http://localhost:8080/api/pending-recipe-x-user/${rxuId}`, {
+        await fetch(`https://chefcito-backtend-production.up.railway.app/api/pending-recipe-x-user/${rxuId}`, {
           method: "DELETE",
         });
         setFavorito(false);
         setRxuId(null);
       } else {
         // Si no está, agregarlo
-        const res = await fetch(`http://localhost:8080/api/pending-recipe-x-user`, {
+        const res = await fetch(`https://chefcito-backtend-production.up.railway.app/api/pending-recipe-x-user`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

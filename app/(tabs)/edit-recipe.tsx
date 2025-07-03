@@ -98,7 +98,7 @@ export default function EditRecipeScreen() {
     try {
       setSaving(true)
       const res = await fetch(
-        `http://localhost:8080/api/recipe/${editingRecipe.re_id}`,
+        `https://chefcito-backtend-production.up.railway.app/api/recipe/${editingRecipe.re_id}`,
         {
           method: "PUT",
           headers: {

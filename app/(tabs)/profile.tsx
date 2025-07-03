@@ -25,12 +25,12 @@ export default function ProfileScreen() {
   useEffect(() => {
     const fetchUserRecipes = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/pending-recipe-x-user/user/1")
+        const res = await fetch("https://chefcito-backtend-production.up.railway.app/api/pending-recipe-x-user/user/1")
         const pendientes = await res.json()
 
         const detalles: any[] = await Promise.all(
           pendientes.map(async (item: any) => {
-            const detalleRes = await fetch(`http://localhost:8080/api/recipe/${item.rxu_re_id}`)
+            const detalleRes = await fetch(`https://chefcito-backtend-production.up.railway.app/api/recipe/${item.rxu_re_id}`)
             const receta = await detalleRes.json()
             return {
               ...receta,
@@ -58,7 +58,7 @@ export default function ProfileScreen() {
   const confirmDelete = async () => {
     if (recipeToDelete !== null) {
       try {
-        await fetch(`http://localhost:8080/api/pending-recipe-x-user/${recipeToDelete}`, {
+        await fetch(`https://chefcito-backtend-production.up.railway.app/api/pending-recipe-x-user/${recipeToDelete}`, {
           method: "DELETE",
         })
 
