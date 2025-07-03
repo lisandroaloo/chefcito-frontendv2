@@ -14,7 +14,7 @@ export function useRecipeDetail(re_id: string | undefined) {
 
     const fetchRecipe = async () => {
       try {
-        const res = await fetch(`https://chefcito-backtend-production.up.railway.app/api/recipe/${re_id}`)
+        const res = await fetch(`http://localhost:8080/api/recipe/${re_id}`)
         if (!res.ok) throw new Error("Error al cargar la receta")
         const data = await res.json()
         setRecipe(data)

@@ -6,9 +6,76 @@ import { useLocalSearchParams } from "expo-router"
 import { useRecipeDetail } from "@/app/hooks/useRecipeDetail"
 
 export default function RecipeDetailScreen() {
-const { re_id } = useLocalSearchParams();
+  const { re_id } = useLocalSearchParams();
   const theme = useTheme()
   const { recipe, loading, error } = useRecipeDetail(re_id)
+  const [favorito, setFavorito] = useState(false)
+  const [rxuId, setRxuId] = useState<string | null>(null)
+  const [loadingFav, setLoadingFav] = useState(false)
+
+  useEffect(() => {
+    const fetchFavorito = async () => {
+      try {
+        const res = await fetch(`http://localhost:8080/api/pending-recipe-x-user/user/1/recipe/${re_id}`);
+
+        if (res.status === 200) {
+          const data = await res.json();
+          if (data && data.rxu_id) {
+            setFavorito(true);
+            setRxuId(data.rxu_id);
+          }
+        } else if (res.status === 404) {
+          // No está en favoritos: no hacer nada
+          setFavorito(false);
+          setRxuId(null);
+        } else {
+          console.error("Error inesperado al verificar favorito:", res.status);
+        }
+
+      } catch (err) {
+        console.error("Error al verificar favorito", err);
+      }
+    };
+
+    fetchFavorito();
+  }, []);
+
+
+  const toggleFavorito = async () => {
+    if (!re_id) return;
+
+    setLoadingFav(true);
+
+    try {
+      if (favorito && rxuId) {
+        // Si ya está en favoritos, eliminarlo
+        await fetch(`http://localhost:8080/api/pending-recipe-x-user/${rxuId}`, {
+          method: "DELETE",
+        });
+        setFavorito(false);
+        setRxuId(null);
+      } else {
+        // Si no está, agregarlo
+        const res = await fetch(`http://localhost:8080/api/pending-recipe-x-user`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            rxu_re_id
+              : re_id, rxu_us_id: 1
+          }),
+        });
+        const data = await res.json();
+        setFavorito(true);
+        setRxuId(data.rxu_id); // suponiendo que el backend devuelve el nuevo id
+      }
+    } catch (err) {
+      console.error("Error al cambiar estado favorito", err);
+    } finally {
+      setLoadingFav(false);
+    }
+  };
+
+
 
 
   if (loading) {
@@ -64,7 +131,13 @@ const { re_id } = useLocalSearchParams();
               <Text variant="headlineMedium" style={[styles.title, { color: "#FFFFFF" }]}>
                 {title}
               </Text>
-              <IconButton icon="heart-outline" size={24} iconColor="#FFFFFF" onPress={() => {}} />
+              <IconButton
+                icon={favorito ? "heart" : "heart-outline"}
+                size={24}
+                iconColor="#FFFFFF"
+                onPress={toggleFavorito}
+                disabled={loadingFav}
+              />
             </View>
 
             {/* Rating de ejemplo */}
@@ -76,7 +149,7 @@ const { re_id } = useLocalSearchParams();
                 <IconButton key={star} icon="star-outline" size={20} iconColor="#FFD700" style={styles.star} />
               ))}
             </View>
-       
+
             {/* Ingredientes */}
             <Card style={styles.section} mode="elevated" elevation={2}>
               <Card.Content style={styles.sectionContent}>

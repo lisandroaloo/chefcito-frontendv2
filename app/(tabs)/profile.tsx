@@ -1,15 +1,20 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { View, StyleSheet, ScrollView } from "react-native"
 import { Card, Text, IconButton, Button, useTheme, Surface, Avatar, Dialog, Portal } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "../context/AuthContext"
 import React from "react"
 import { useRouter } from "expo-router"
+import { useRecipeDetail } from "../hooks/useRecipeDetail"
+import { TouchableOpacity } from "react-native"
+
+
+
 
 export default function ProfileScreen() {
-  const [userRecipes, setUserRecipes] = useState(["Receta 1", "Receta 2", "Receta 3"])
+  const [userRecipes, setUserRecipes] = useState<any[]>([])
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false)
   const [recipeToDelete, setRecipeToDelete] = useState<number | null>(null)
   const theme = useTheme()
@@ -17,19 +22,57 @@ export default function ProfileScreen() {
 
   const { user, logout } = useAuth()
 
+  useEffect(() => {
+    const fetchUserRecipes = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/api/pending-recipe-x-user/user/1")
+        const pendientes = await res.json()
+
+        const detalles: any[] = await Promise.all(
+          pendientes.map(async (item: any) => {
+            const detalleRes = await fetch(`http://localhost:8080/api/recipe/${item.rxu_re_id}`)
+            const receta = await detalleRes.json()
+            return {
+              ...receta,
+              rxu_id: item.rxu_id // 👈 Agregamos el ID del favorito
+            }
+          })
+        )
+
+
+        setUserRecipes(detalles)
+      } catch (error) {
+        console.error("Error al obtener recetas del usuario", error)
+      }
+    }
+
+    fetchUserRecipes()
+  }, [])
+
   const handleDeleteRecipe = (index: number) => {
-    setRecipeToDelete(index)
+    const recipe = userRecipes[index]
+    setRecipeToDelete(recipe.rxu_id)
     setDeleteDialogVisible(true)
   }
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (recipeToDelete !== null) {
-      const newRecipes = userRecipes.filter((_, i) => i !== recipeToDelete)
-      setUserRecipes(newRecipes)
+      try {
+        await fetch(`http://localhost:8080/api/pending-recipe-x-user/${recipeToDelete}`, {
+          method: "DELETE",
+        })
+
+        const newRecipes = userRecipes.filter((r) => r.rxu_id !== recipeToDelete)
+        setUserRecipes(newRecipes)
+      } catch (err) {
+        console.error("Error al eliminar receta", err)
+      }
     }
+
     setDeleteDialogVisible(false)
     setRecipeToDelete(null)
   }
+
 
   const handleCreateRecipe = () => {
     router.replace("/create-recipe")
@@ -76,27 +119,23 @@ export default function ProfileScreen() {
           <View style={styles.recipesSection}>
             {userRecipes.map((recipe, index) => (
               <Card
-                key={index}
+                key={recipe.re_id}
                 style={styles.recipeCard}
                 mode="elevated"
                 elevation={1}
               >
                 <Card.Content style={styles.recipeCardContent}>
                   <View style={styles.recipeInfo}>
-                    <View style={styles.recipeIconContainer}>
-                      <IconButton
-                        icon="silverware-fork-knife"
-                        size={20}
-                        iconColor={theme.colors.secondary}
-                        style={styles.recipeIcon}
-                      />
-                    </View>
-                    <Text
-                      variant="bodyMedium"
-                      style={[styles.recipeName, { color: theme.colors.secondary }]}
-                    >
-                      {recipe}
-                    </Text>
+
+                    <TouchableOpacity onPress={() => router.replace(`/recipe-detail/${recipe.re_id}`)}>
+                      <Text
+                        variant="bodyMedium"
+                        style={[styles.recipeName, { color: theme.colors.secondary }]}
+                      >
+                        {recipe.re_title}
+                      </Text>
+                    </TouchableOpacity>
+
                   </View>
                   <IconButton
                     icon="close"
@@ -108,6 +147,7 @@ export default function ProfileScreen() {
                 </Card.Content>
               </Card>
             ))}
+
           </View>
 
           {/* Action Buttons */}

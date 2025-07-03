@@ -20,7 +20,7 @@ export function useCreateRecipe() {
   const createRecipe = async (recipe: IRecipe) => {
     setLoading(true)
     try {
-      const res = await fetch("https://chefcito-backtend-production.up.railway.app/api/recipe", {
+      const res = await fetch("http://localhost:8080/api/recipe/api/recipe", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
