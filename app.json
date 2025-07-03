@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "nombre-de-tu-app",
-    "slug": "nombre-de-tu-app",
+    "name": "chefcito-frontendv2",
+    "slug": "chefcito-frontendv2",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -17,6 +17,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.lisandrooalo.chefcitofrontendv2",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -33,6 +34,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "d437c95b-2977-40f0-961c-740f9f9d4c2b"
+      }
     }
   }
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState } from "react"
 import { View, StyleSheet, ScrollView, Alert } from "react-native"
 import {
   TextInput,
@@ -13,10 +13,10 @@ import {
   Snackbar,
   Checkbox,
 } from "react-native-paper"
-import { router, useRouter } from "expo-router"
 import { SafeAreaView } from "react-native-safe-area-context"
-import React from "react"
-import { useCreateRecipe } from "../hooks/useCreateRecipe" // Asegurate que la ruta sea correcta
+import { useRouter } from "expo-router"
+import { useCreateRecipe } from "../hooks/useCreateRecipe"
+import { pickImageAndUpload } from "../utils/cloudinary"
 
 export default function CreateRecipeScreen() {
   const [recipeName, setRecipeName] = useState("")
@@ -29,10 +29,12 @@ export default function CreateRecipeScreen() {
   const [isCeliac, setIsCeliac] = useState(false)
   const [isLactoseFree, setIsLactoseFree] = useState(false)
 
+  const [imageUrl, setImageUrl] = useState("")
+
   const theme = useTheme()
   const router = useRouter()
 
-  const { createRecipe, loading, error } = useCreateRecipe()
+  const { createRecipe, loading } = useCreateRecipe()
 
   const addIngredient = () => setIngredients([...ingredients, ""])
   const removeIngredient = (index: number) => setIngredients(ingredients.filter((_, i) => i !== index))
@@ -51,9 +53,14 @@ export default function CreateRecipeScreen() {
   }
 
   const handleSave = async () => {
+    if (!recipeName.trim()) {
+      Alert.alert("Falta nombre", "Ingresá un nombre para la receta.")
+      return
+    }
+
     const recipeToSend = {
       us_id: 1,
-      picture: "text",
+      picture: imageUrl,
       title: recipeName,
       vegan: isVegan,
       vegetarian: isVegetarian,
@@ -62,7 +69,6 @@ export default function CreateRecipeScreen() {
       ingredients: ingredients.filter((i) => i.trim() !== ""),
       steps: steps.filter((s) => s.trim() !== ""),
     }
-
 
     try {
       await createRecipe(recipeToSend)
@@ -92,13 +98,26 @@ export default function CreateRecipeScreen() {
             }}
           />
 
-          {/* Imagen (futura carga) */}
+          {/* Imagen */}
           <Card style={styles.imageUploadCard} mode="elevated" elevation={2}>
             <Card.Content style={styles.imageUploadContent}>
-              <IconButton icon="camera" size={40} iconColor={theme.colors.secondary} />
+              <IconButton
+                icon="camera"
+                size={40}
+                iconColor={theme.colors.secondary}
+                onPress={async () => {
+                  const url = await pickImageAndUpload()
+                  if (url) setImageUrl(url)
+                }}
+              />
               <Text variant="bodyMedium" style={[styles.imageUploadText, { color: theme.colors.secondary }]}>
                 Cargar imagen
               </Text>
+              {imageUrl ? (
+                <Text style={{ marginTop: 8, fontSize: 12, color: "#888" }}>
+                  Imagen cargada correctamente
+                </Text>
+              ) : null}
             </Card.Content>
           </Card>
 

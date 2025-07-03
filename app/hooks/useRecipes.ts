@@ -12,10 +12,10 @@ export function useRecipes(category: string) {
     const fetchRecipes = async () => {
       setLoading(true)
       try {
-        const res = await fetch("http://localhost:8080/api/recipe")
+        const res = await fetch("https://chefcito-backtend-production.up.railway.app/api/recipe")
         if (!res.ok) throw new Error("Error en la respuesta del servidor")
         const data = await res.json()
-        
+
         const filteredData: any[] = data
 
         switch (category) {
@@ -35,13 +35,20 @@ export function useRecipes(category: string) {
             setRecipes(filteredData.filter((r: any) => r.re_suitable_for_lactose_intolerant === true))
             break;
           case "Hamburguesas":
-            setRecipes(filteredData.filter((r: any) => r.re_title.toLowerCase().includes("hamburguesa")))
+            setRecipes(
+              filteredData.filter((r: any) =>
+                typeof r.re_title === "string" &&
+                r.re_title.toLowerCase().includes("hamburguesa")
+              )
+            )
+
             break;
           default:
             setRecipes(filteredData)
             break;
         }
-        
+        console.log(recipes);
+
         setError(null)
       } catch (err) {
         setError(err)

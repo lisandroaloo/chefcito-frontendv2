@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState } from 'react'
-import { View, StyleSheet, ScrollView } from 'react-native'
-import { Card, IconButton, useTheme, Surface, Text, Searchbar, Menu, Divider, Button, Checkbox } from 'react-native-paper'
+import { View, StyleSheet, ScrollView, ImageBackground } from 'react-native'
+import { Card, IconButton, useTheme, Surface, Text, Searchbar, Menu, Button, Checkbox } from 'react-native-paper'
 import { useRoute } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRecipes } from '../hooks/useRecipes'
@@ -155,14 +155,13 @@ export default function RecipeListScreen() {
                 mode="elevated"
               >
                 <Card.Content style={styles.cardContent}>
-                  <View style={styles.recipeImagePlaceholder}>
-                    <IconButton
-                      icon="silverware-fork-knife"
-                      size={32}
-                      iconColor={theme.colors.secondary}
-                      style={styles.recipeIcon}
-                    />
-                  </View>
+                  <ImageBackground
+                    source={{ uri: recipe.re_picture }}
+                    style={styles.recipeImagePlaceholder}
+                    imageStyle={{ borderRadius: 30 }}
+                  >
+                 
+                  </ImageBackground>
                   <Text
                     variant="bodyMedium"
                     style={[styles.recipeTitle, { color: theme.colors.secondary }]}
@@ -214,10 +213,17 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
+    overflow: 'hidden', // importante para que el borde redondeado funcione en Android
+  },
+  iconOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: 30,
   },
   recipeIcon: {
     margin: 0,
