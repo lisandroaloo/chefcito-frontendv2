@@ -18,10 +18,13 @@ import { Picker } from "@react-native-picker/picker" // Import Picker
 import { useGetRecipesByUser } from "../hooks/useGetRecipesByUser"
 import { IRecipe } from "../hooks/useCreateRecipe"
 import { useRouter } from "expo-router"
+import { useAuth } from "../context/AuthContext"
 
 export default function EditRecipeScreen() {
   const theme = useTheme()
-  const { recipes, loading: loadingRecipes } = useGetRecipesByUser("test")
+
+   const { user } = useAuth()
+  const { recipes, loading: loadingRecipes } = useGetRecipesByUser(user)
 
   const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null)
   const [editingRecipe, setEditingRecipe] = useState<any | null>(null)
@@ -83,13 +86,13 @@ export default function EditRecipeScreen() {
 
     const updatedRecipe: IRecipe = {
       ...editingRecipe,
-      re_title: recipeName,
+      title: recipeName,
       ingredients: ingredients.filter((i) => i.trim() !== ""),
       steps: steps.filter((s) => s.trim() !== ""),
-      re_suitable_for_lactose_vegan: isVegan,
-      re_suitable_for_lactose_vegetarian: isVegetarian,
-      re_suitable_for_lactose_celiac: isCeliac,
-      re_suitable_for_lactose_intolerant: isLactoseFree,
+      vegan: isVegan,
+      vegetarian: isVegetarian,
+      celiac: isCeliac,
+      lactose: isLactoseFree,
     }
 
     try {
