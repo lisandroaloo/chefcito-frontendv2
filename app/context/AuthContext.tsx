@@ -1,17 +1,20 @@
 import { createContext, useContext, useState, useEffect } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { login as apiLogin, logout as apiLogout, getStoredUser } from "../api/auth"
+import { login as apiLogin, logout as apiLogout, getStoredUser, getStoredUserId } from "../api/auth"
 
 const AuthContext = createContext(null)
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState<string | null>(null)
+  const [userId, setUserId] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const loadUser = async () => {
       const storedUser = await getStoredUser()
+      const storedId = await getStoredUserId()
       setUser(storedUser)
+      setUserId(storedId)
       setLoading(false)
     }
     console.log("LOG")
@@ -19,17 +22,22 @@ export const AuthProvider = ({ children }) => {
   }, [user])
 
   const login = async (alias: string, password: string) => {
-    const user = await apiLogin(alias, password)
+    const { user: user, id } = await apiLogin(alias, password)
+    console.log(id);
+    
     setUser(user)
+    setUserId(id)
   }
+
 
   const logout = async () => {
     await apiLogout()
     setUser(null)
+    setUserId(null)
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, userId, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   )

@@ -17,6 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { useRouter } from "expo-router"
 import { useCreateRecipe } from "../hooks/useCreateRecipe"
 import { pickImageAndUpload } from "../utils/cloudinary"
+import { useAuth } from "../context/AuthContext"
 
 export default function CreateRecipeScreen() {
   const [recipeName, setRecipeName] = useState("")
@@ -30,6 +31,8 @@ export default function CreateRecipeScreen() {
   const [isLactoseFree, setIsLactoseFree] = useState(false)
 
   const [imageUrl, setImageUrl] = useState("")
+
+  const { userId } = useAuth()
 
   const theme = useTheme()
   const router = useRouter()
@@ -57,9 +60,11 @@ export default function CreateRecipeScreen() {
       Alert.alert("Falta nombre", "Ingresá un nombre para la receta.")
       return
     }
+    console.log(userId);
+    
 
     const recipeToSend = {
-      us_id: 1,
+      us_id: userId,
       picture: imageUrl,
       title: recipeName,
       vegan: isVegan,
