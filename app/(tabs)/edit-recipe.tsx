@@ -23,7 +23,7 @@ import { useAuth } from "../context/AuthContext"
 export default function EditRecipeScreen() {
   const theme = useTheme()
 
-   const { user } = useAuth()
+  const { user } = useAuth()
   const { recipes, loading: loadingRecipes } = useGetRecipesByUser(user)
 
   const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null)
@@ -36,6 +36,7 @@ export default function EditRecipeScreen() {
   // Form fields
 
   const [recipeName, setRecipeName] = useState("")
+  const [recipeImg, setRecipeImg] = useState("")
   const [ingredients, setIngredients] = useState([""])
   const [steps, setSteps] = useState([""])
   const [isVegan, setIsVegan] = useState(false)
@@ -52,6 +53,7 @@ export default function EditRecipeScreen() {
 
       if (recipe) {
         setEditingRecipe(recipe)
+        setRecipeImg(recipe.re_picture)
         setRecipeName(recipe.re_title)
         setIngredients(recipe.ingredients || [""])
         setSteps(recipe.steps || [""])
@@ -87,6 +89,7 @@ export default function EditRecipeScreen() {
     const updatedRecipe: IRecipe = {
       ...editingRecipe,
       title: recipeName,
+      picture: recipeImg,
       ingredients: ingredients.filter((i) => i.trim() !== ""),
       steps: steps.filter((s) => s.trim() !== ""),
       vegan: isVegan,
