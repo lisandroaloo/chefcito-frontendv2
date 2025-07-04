@@ -111,12 +111,14 @@ export default function HomeScreen() {
       justifyContent: "space-between",
       gap: 16,
     },
-    categoryCard: {
-      width: "47%",
-      backgroundColor: "#FFFFFF",
-      borderRadius: 12,
-      // height: "50%"
-    },
+   categoryCard: {
+     width: "47%",
+     height: 180, // ✅ altura fija recomendada
+     backgroundColor: "#FFFFFF",
+     borderRadius: 12,
+     overflow: "hidden", // evita que el contenido se desborde
+   },
+
     cardContent: {
       alignItems: "center",
       paddingVertical: 24,
