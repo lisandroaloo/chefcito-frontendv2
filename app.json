@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "chefcito-frontendv2",
-    "slug": "chefcito-frontendv2",
+    "name": "Chefcito",
+    "slug": "chefcito",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/chefcito-logo.png",
     "scheme": "nombredetuapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

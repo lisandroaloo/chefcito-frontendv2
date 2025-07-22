@@ -21,7 +21,7 @@ export async function login(username: string, password: string): Promise<{ user:
   await AsyncStorage.setItem("user", JSON.stringify(data.us_alias))
   await AsyncStorage.setItem("id", JSON.stringify(data.us_id))
 
-  return { user: data.us_alias, id: data.us_id }
+  return { user: data.user, id: data.us_id }
 }
 
 
