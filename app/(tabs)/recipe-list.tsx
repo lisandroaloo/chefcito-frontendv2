@@ -20,25 +20,37 @@ export default function RecipeListScreen() {
   const [excludeMenuVisible, setExcludeMenuVisible] = useState(false)
   const [includeIngredients, setIncludeIngredients] = useState<Set<string>>(new Set())
   const [excludeIngredients, setExcludeIngredients] = useState<Set<string>>(new Set())
+  // ✅ Obtener todos los ingredientes únicos en minúscula (por nombre)
+  const allIngredients = recipes
+    .map((recipe) =>
+      (recipe.ingredients || []).map((ing) => ing.name.toLowerCase())
+    )
+    .flat()
 
-  // Hardcode por ahora
-  const allIngredients = recipes.map((recipe) => (recipe.ingredients || []).map((ing: string) => ing.toLowerCase())).flat()
-
-  // Filtro por título
+  // ✅ Filtro por título (esto está bien)
   const filteredByTitle = recipes.filter((recipe) => {
     if (!recipe.re_title) return false
     const words = recipe.re_title.toLowerCase().split(' ')
-    return words.some((word: string) => word.startsWith(searchQuery.toLowerCase()))
+    return words.some((word: string) =>
+      word.startsWith(searchQuery.toLowerCase())
+    )
   })
 
-  // Filtro por inclusión y exclusión de ingredientes
+  // ✅ Filtro por inclusión y exclusión de ingredientes
   const filteredRecipes = filteredByTitle.filter((recipe) => {
-    const recipeIngs = (recipe.ingredients || []).map((ing: string) => ing.toLowerCase())
-    const includesOK = Array.from(includeIngredients).every((ing) => recipeIngs.includes(ing))
-    const excludesOK = Array.from(excludeIngredients).every((ing) => !recipeIngs.includes(ing))
+    const recipeIngs = (recipe.ingredients || []).map((ing) =>
+      ing.name.toLowerCase()
+    )
+    const includesOK = Array.from(includeIngredients).every((ing) =>
+      recipeIngs.includes(ing)
+    )
+    const excludesOK = Array.from(excludeIngredients).every((ing) =>
+      !recipeIngs.includes(ing)
+    )
     return includesOK && excludesOK
   })
 
+  // ✅ Agregar o quitar ingredientes del filtro (sin cambiar nada acá)
   const toggleIngredient = (ing: string, include: boolean) => {
     if (include) {
       const newSet = new Set(includeIngredients)
@@ -50,6 +62,7 @@ export default function RecipeListScreen() {
       setExcludeIngredients(newSet)
     }
   }
+
 
   const handleRecipePress = (recipe: any) => {
     router.push(`/recipe-detail/${recipe.re_id}`)
@@ -160,7 +173,7 @@ export default function RecipeListScreen() {
                     style={styles.recipeImagePlaceholder}
                     imageStyle={{ borderRadius: 30 }}
                   >
-                 
+
                   </ImageBackground>
                   <Text
                     variant="bodyMedium"

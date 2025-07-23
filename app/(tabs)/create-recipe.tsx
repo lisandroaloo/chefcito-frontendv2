@@ -21,7 +21,8 @@ import { useAuth } from "../context/AuthContext"
 
 export default function CreateRecipeScreen() {
   const [recipeName, setRecipeName] = useState("")
-  const [ingredients, setIngredients] = useState([""])
+  const [ingredients, setIngredients] = useState([{ name: "", quantity: "", unit: "" }])
+
   const [steps, setSteps] = useState([""])
   const [snackbarVisible, setSnackbarVisible] = useState(false)
 
@@ -39,13 +40,17 @@ export default function CreateRecipeScreen() {
 
   const { createRecipe, loading } = useCreateRecipe()
 
-  const addIngredient = () => setIngredients([...ingredients, ""])
-  const removeIngredient = (index: number) => setIngredients(ingredients.filter((_, i) => i !== index))
-  const updateIngredient = (index: number, value: string) => {
-    const newList = [...ingredients]
-    newList[index] = value
-    setIngredients(newList)
-  }
+  const addIngredient = () => setIngredients([...ingredients, { name: "", quantity: "", unit: "" }])
+
+const removeIngredient = (index: number) =>
+  setIngredients(ingredients.filter((_, i) => i !== index))
+
+const updateIngredient = (index: number, field: string, value: string) => {
+  const updated = [...ingredients]
+  updated[index][field] = value
+  setIngredients(updated)
+}
+
 
   const addStep = () => setSteps([...steps, ""])
   const removeStep = (index: number) => setSteps(steps.filter((_, i) => i !== index))
@@ -56,33 +61,34 @@ export default function CreateRecipeScreen() {
   }
 
   const handleSave = async () => {
-    if (!recipeName.trim()) {
-      Alert.alert("Falta nombre", "Ingresá un nombre para la receta.")
-      return
-    }
-    console.log(userId);
-    
-
-    const recipeToSend = {
-      us_id: userId,
-      picture: imageUrl,
-      title: recipeName,
-      vegan: isVegan,
-      vegetarian: isVegetarian,
-      celiac: isCeliac,
-      lactose: isLactoseFree,
-      ingredients: ingredients.filter((i) => i.trim() !== ""),
-      steps: steps.filter((s) => s.trim() !== ""),
-    }
-
-    try {
-      await createRecipe(recipeToSend)
-      setSnackbarVisible(true)
-      setTimeout(() => router.replace("/profile"), 1500)
-    } catch (err) {
-      Alert.alert("Error", "No se pudo guardar la receta.")
-    }
+  if (!recipeName.trim()) {
+    Alert.alert("Falta nombre", "Ingresá un nombre para la receta.")
+    return
   }
+
+  const filteredIngredients = ingredients.filter(i => i.name.trim() !== "")
+
+  const recipeToSend = {
+    us_id: userId,
+    picture: imageUrl,
+    title: recipeName,
+    vegan: isVegan,
+    vegetarian: isVegetarian,
+    celiac: isCeliac,
+    lactose: isLactoseFree,
+    ingredients: filteredIngredients,
+    steps: steps.filter((s) => s.trim() !== ""),
+  }
+
+  try {
+    await createRecipe(recipeToSend)
+    setSnackbarVisible(true)
+    setTimeout(() => router.replace("/profile"), 1500)
+  } catch (err) {
+    Alert.alert("Error", "No se pudo guardar la receta.")
+  }
+}
+
 
   return (
     <Surface style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -138,10 +144,42 @@ export default function CreateRecipeScreen() {
               <View style={styles.inputsList}>
                 {ingredients.map((ingredient, index) => (
                   <View key={index} style={styles.inputRow}>
+                    {/* Nombre */}
                     <TextInput
                       label={`Ingrediente ${index + 1}`}
-                      value={ingredient}
-                      onChangeText={(val) => updateIngredient(index, val)}
+                      value={ingredient.name}
+                      onChangeText={(val) => updateIngredient(index, "name", val)}
+                      mode="outlined"
+                      style={[styles.listInput, { flex: 2, marginRight: 8 }]}
+                      theme={{
+                        colors: {
+                          onSurfaceVariant: "#666666",
+                          primary: theme.colors.secondary,
+                        },
+                      }}
+                    />
+
+                    {/* Cantidad */}
+                    <TextInput
+                      label="Cant."
+                      value={ingredient.quantity}
+                      onChangeText={(val) => updateIngredient(index, "quantity", val)}
+                      mode="outlined"
+                      keyboardType="numeric"
+                      style={[styles.listInput, { flex: 1, marginRight: 8 }]}
+                      theme={{
+                        colors: {
+                          onSurfaceVariant: "#666666",
+                          primary: theme.colors.secondary,
+                        },
+                      }}
+                    />
+
+                    {/* Unidad */}
+                    <TextInput
+                      label="Unidad"
+                      value={ingredient.unit}
+                      onChangeText={(val) => updateIngredient(index, "unit", val)}
                       mode="outlined"
                       style={[styles.listInput, { flex: 1 }]}
                       theme={{
@@ -151,9 +189,17 @@ export default function CreateRecipeScreen() {
                         },
                       }}
                     />
-                    <IconButton icon="trash-can" size={24} iconColor="red" onPress={() => removeIngredient(index)} />
+
+                    {/* Eliminar */}
+                    <IconButton
+                      icon="trash-can"
+                      size={24}
+                      iconColor="red"
+                      onPress={() => removeIngredient(index)}
+                    />
                   </View>
                 ))}
+
               </View>
             </Card.Content>
           </Card>

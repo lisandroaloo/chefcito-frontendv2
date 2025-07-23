@@ -16,6 +16,8 @@ export default function RecipeDetailScreen() {
   const [loadingFav, setLoadingFav] = useState(false)
   const { userId, user } = useAuth()
   const { saveReview } = useSaveReview()
+  const [portionMultiplier, setPortionMultiplier] = useState(1)
+
 
   // ✅ Estos también deben ir DENTRO de la función
   const [alreadyReviewed, setAlreadyReviewed] = useState(false);
@@ -54,7 +56,7 @@ export default function RecipeDetailScreen() {
       if (!userId || !re_id) return;
 
       try {
-      const res = await fetch(`http://localhost:8084/api/recipe/check-review/${re_id}/user/${userId}`);
+        const res = await fetch(`http://localhost:8084/api/recipe/check-review/${re_id}/user/${userId}`);
         const result = await res.json();
         setAlreadyReviewed(result.body === true); // o !!result
       } catch (error) {
@@ -192,7 +194,7 @@ export default function RecipeDetailScreen() {
   }
 
   // Campos según respuesta del backend
-  const ingredients: string[] = recipe.ingredients ?? []
+  const ingredients: any[] = recipe.ingredients ?? []
   const steps: string[] = recipe.steps ?? []
   const title: string = recipe.re_title ?? "Receta sin título"
   const imageUri: string =
@@ -235,6 +237,41 @@ export default function RecipeDetailScreen() {
               ))}
             </View>
 
+            <View style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 16,
+              paddingVertical: 12,
+              backgroundColor: theme.colors.surfaceVariant,
+              borderRadius: 12,
+              marginBottom: 16,
+            }}>
+              <Button
+                mode="outlined"
+                onPress={() => setPortionMultiplier(Math.max(1, portionMultiplier - 1))}
+                contentStyle={{ paddingHorizontal: 6 }}
+                labelStyle={{ fontSize: 20 }}
+              >
+                −
+              </Button>
+
+              <View style={{ paddingHorizontal: 12 }}>
+                <Text variant="titleMedium" style={{ fontWeight: "bold" }}>
+                  Porciones: {portionMultiplier}
+                </Text>
+              </View>
+
+              <Button
+                mode="outlined"
+                onPress={() => setPortionMultiplier(portionMultiplier + 1)}
+                contentStyle={{ paddingHorizontal: 6 }}
+                labelStyle={{ fontSize: 20 }}
+              >
+                +
+              </Button>
+            </View>
+
 
             {/* Ingredientes */}
             <Card style={styles.section} mode="elevated" elevation={2}>
@@ -247,13 +284,15 @@ export default function RecipeDetailScreen() {
                     ingredients.map((ingredient, index) => (
                       <View key={index} style={styles.ingredientItem}>
                         <Text variant="bodyMedium" style={styles.ingredientText}>
-                          • {ingredient}
+                          • {ingredient.name} — {parseFloat(ingredient.quantity) * portionMultiplier} {ingredient.unit}
                         </Text>
+
                       </View>
                     ))
                   ) : (
                     <Text variant="bodyMedium">No hay ingredientes listados.</Text>
                   )}
+
                 </View>
               </Card.Content>
             </Card>
@@ -370,7 +409,7 @@ export default function RecipeDetailScreen() {
                       if (success) {
                         setUserReviews([
                           ...userReviews,
-                          { user: user , comment: newReview, rating: reviewRating }
+                          { user: user, comment: newReview, rating: reviewRating }
                         ])
                         setNewReview("")
                         setReviewRating(0)

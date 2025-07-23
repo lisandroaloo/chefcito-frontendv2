@@ -8,7 +8,7 @@ export interface IRecipe {
   vegetarian: boolean
   celiac: boolean
   lactose: boolean
-  ingredients: string[]
+  ingredients: any[]
   steps: string[]
 }
 
@@ -20,7 +20,7 @@ export function useCreateRecipe() {
   const createRecipe = async (recipe: IRecipe) => {
     setLoading(true)
     try {
-      const res = await fetch("https://chefcito-backtend-production.up.railway.app/api/recipe", {
+      const res = await fetch("http://localhost:8084/api/recipe", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
