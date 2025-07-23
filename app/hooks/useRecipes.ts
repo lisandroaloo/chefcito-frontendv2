@@ -12,7 +12,7 @@ export function useRecipes(category: string) {
     const fetchRecipes = async () => {
       setLoading(true)
       try {
-        const res = await fetch("https://chefcito-backtend-production.up.railway.app/api/recipe")
+        const res = await fetch("http://localhost:8084/api/recipe")
         if (!res.ok) throw new Error("Error en la respuesta del servidor")
         const data = await res.json()
 

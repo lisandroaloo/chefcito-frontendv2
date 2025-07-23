@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 
 // api/auth.ts
 export async function login(username: string, password: string): Promise<{ user: string; id: number }> {
-  const response = await fetch("https://chefcito-backtend-production.up.railway.app/api/user/login", {
+  const response = await fetch("http://localhost:8084/api/user/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

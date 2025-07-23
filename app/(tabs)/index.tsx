@@ -1,6 +1,6 @@
 "use client"
 
-import { useState} from "react"
+import { useState } from "react"
 import { View, StyleSheet } from "react-native"
 import { TextInput, Button, useTheme, Surface, Text } from "react-native-paper"
 import { router } from "expo-router"
@@ -17,14 +17,19 @@ export default function LoginScreen() {
   const { login } = useAuth()
 
   const handleLogin = async () => {
-      try {
-        await login(username, password)
-        navigation.navigate("home")
-      } catch (error) {
-        console.error("Login fallido:", error.message)
-        alert("username o contraseña incorrectos.")
-      }
+    try {
+      await login(username, password)
+      navigation.navigate("home")
+    } catch (error) {
+      console.error("Login fallido:", error.message)
+      alert("username o contraseña incorrectos.")
     }
+  }
+
+
+  const handleRecoverPassword = () => {
+    navigation.navigate("password-reset")
+  }
 
 
   return (
@@ -33,7 +38,7 @@ export default function LoginScreen() {
         <View style={styles.content}>
           <View style={styles.logoContainer}>
             <View style={styles.logoWrapper}>
-             <Image source={require("../../assets/chefcito-logo.png")} style={styles.logo} resizeMode="contain" />
+              <Image source={require("../../assets/chefcito-logo.png")} style={styles.logo} resizeMode="contain" />
             </View>
           </View>
           <View style={styles.formContainer}>
@@ -77,6 +82,19 @@ export default function LoginScreen() {
             >
               Log in
             </Button>
+            <Text
+              onPress={handleRecoverPassword}
+              style={{
+                marginTop: 12,
+                textAlign: "center",
+                color: theme.colors.secondary,
+                textDecorationLine: "underline",
+                fontSize: 14,
+              }}
+            >
+              ¿Has olvidado tu contraseña?
+            </Text>
+
           </View>
         </View>
       </SafeAreaView>
@@ -130,11 +148,11 @@ const styles = StyleSheet.create({
   buttonContent: {
     paddingVertical: 8,
   },
-   logo: {
-         width: 200,
-         height: 200,
-         marginBottom: 50,
-       },
+  logo: {
+    width: 200,
+    height: 200,
+    marginBottom: 50,
+  },
   buttonLabel: {
     fontSize: 16,
     fontWeight: "600",
