@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { useLocalSearchParams } from "expo-router"
 import { useRecipeDetail } from "@/app/hooks/useRecipeDetail"
 import { useAuth } from "@/app/context/AuthContext"
+import { useSaveReview } from "@/app/hooks/useSaveReview"
 
 export default function RecipeDetailScreen() {
   const { re_id } = useLocalSearchParams();
@@ -13,20 +14,17 @@ export default function RecipeDetailScreen() {
   const [favorito, setFavorito] = useState(false)
   const [rxuId, setRxuId] = useState<string | null>(null)
   const [loadingFav, setLoadingFav] = useState(false)
-  const { userId } = useAuth()
+  const { userId, user } = useAuth()
+  const { saveReview } = useSaveReview()
 
-
+  // ✅ Estos también deben ir DENTRO de la función
+  const [alreadyReviewed, setAlreadyReviewed] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false)
   const [viewingReviews, setViewingReviews] = useState(false)
-
   const [newReview, setNewReview] = useState("")
   const [reviewRating, setReviewRating] = useState(0)
-
   const [writingReview, setWritingReview] = useState(false)
-
-  const [userReviews, setUserReviews] = useState<
-    { user: string; comment: string; rating: number }[]
-  >([])
+  const [userReviews, setUserReviews] = useState<{ user: string; comment: string; rating: number }[]>([])
   const [loadingReviews, setLoadingReviews] = useState(false)
 
 
@@ -51,6 +49,23 @@ export default function RecipeDetailScreen() {
     return "star-outline";
   }
 
+  useEffect(() => {
+    const fetchAlreadyReviewed = async () => {
+      if (!userId || !re_id) return;
+
+      try {
+      const res = await fetch(`http://localhost:8084/api/recipe/check-review/${re_id}/user/${userId}`);
+        const result = await res.json();
+        setAlreadyReviewed(result.body === true); // o !!result
+      } catch (error) {
+        console.error("Error verificando si ya se hizo la review:", error);
+      }
+    };
+
+    fetchAlreadyReviewed();
+  }, [userId, re_id]);
+
+
 
   useEffect(() => {
     if (!re_id) return;
@@ -62,12 +77,8 @@ export default function RecipeDetailScreen() {
         if (!res.ok) throw new Error(`Error ${res.status}`);
         const data = await res.json();
 
-        // data es un array con:
-        // { id, re_id, us_id, stars, review }
-
-        // Mapeamos a formato que usamos en userReviews
         const formattedReviews = data.map((r: any) => ({
-          user: `Usuario #${r.us_id}`, // O si podés traer nombre de usuario, mejor
+          user: r.us_name,
           comment: r.review,
           rating: r.stars,
         }));
@@ -146,33 +157,6 @@ export default function RecipeDetailScreen() {
       setLoadingFav(false);
     }
   };
-
-
-  const enviarReseña = async () => {
-    try {
-      const res = await fetch("http://localhost:8084/api/recipe/review", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          re_id: re_id,
-          us_id: userId,
-          stars: reviewRating,
-          review: newReview.trim(),
-        }),
-      })
-
-      if (!res.ok) {
-        throw new Error(`Error al enviar reseña: ${res.status}`)
-      }
-
-      return true
-    } catch (err) {
-      console.error("Error al enviar reseña:", err)
-      return false
-    }
-  }
-
-
 
 
   if (loading) {
@@ -381,12 +365,12 @@ export default function RecipeDetailScreen() {
                 <Button
                   onPress={async () => {
                     if (newReview.trim() !== "" && reviewRating > 0) {
-                      const success = await enviarReseña()
+                      const success = await saveReview(re_id, userId, reviewRating, newReview)
 
                       if (success) {
                         setUserReviews([
                           ...userReviews,
-                          { user: "Usuario #" + userId, comment: newReview, rating: reviewRating }
+                          { user: user , comment: newReview, rating: reviewRating }
                         ])
                         setNewReview("")
                         setReviewRating(0)
@@ -415,15 +399,22 @@ export default function RecipeDetailScreen() {
               <>
                 <Button
                   onPress={() => {
-                    if (userId) {
-                      setWritingReview(true)
-                    } else {
+                    if (!userId) {
                       alert("Tenés que iniciar sesión para dejar una reseña.")
+                      return;
                     }
+
+                    if (alreadyReviewed) {
+                      alert("Ya dejaste una reseña para esta receta.");
+                      return;
+                    }
+
+                    setWritingReview(true);
                   }}
                 >
                   Dejar reseña
                 </Button>
+
                 <Button onPress={() => setViewingReviews(true)}>Ver reseñas</Button>
               </>
             )}
