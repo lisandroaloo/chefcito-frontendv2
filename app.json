@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/chefcito-logo.png",
-    "scheme": "nombredetuapp",
+    "scheme": "Chefcito",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -19,7 +19,7 @@
     "android": {
       "package": "com.lisandrooalo.chefcitofrontendv2",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/chefcito-logo.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
