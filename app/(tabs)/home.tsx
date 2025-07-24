@@ -9,7 +9,7 @@ export default function HomeScreen() {
   const theme = useTheme()
 
   const categories = [
-    { title: 'Todas', icon: 'restaurant-outline', image: require('../../assets/sintacc.jpeg') },
+    { title: 'Todas', icon: 'restaurant-outline', image: require('../../assets/todas.jpeg') },
     { title: 'Sin tacc', icon: 'restaurant-outline', image: require('../../assets/sintacc.jpeg') },
     { title: 'Veganas', icon: 'leaf-outline', image: require('../../assets/vegano.jpeg') },
     { title: 'Populares', icon: 'ice-cream-outline', image: require('../../assets/popular.jpeg') },

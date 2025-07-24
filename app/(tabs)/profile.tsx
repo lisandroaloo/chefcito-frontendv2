@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { View, StyleSheet, ScrollView } from "react-native"
-import { Card, Text, IconButton, Button, useTheme, Surface, Avatar, Dialog, Portal } from "react-native-paper"
+import { Card, Text, IconButton, Button, useTheme, Surface, Avatar, Dialog, Portal, ActivityIndicator } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useAuth } from "../context/AuthContext"
 import React from "react"
@@ -19,35 +19,40 @@ export default function ProfileScreen() {
   const [recipeToDelete, setRecipeToDelete] = useState<number | null>(null)
   const theme = useTheme()
   const router = useRouter()
+  const [loading, setLoading] = useState(true)
+
 
   const { user, logout } = useAuth()
 
   useEffect(() => {
     const fetchUserRecipes = async () => {
+      setLoading(true)
       try {
-        const res = await fetch("https://chefcito-backtend-production.up.railway.app/api/pending-recipe-x-user/user/1")
+        const res = await fetch("http://localhost:8084/api/pending-recipe-x-user/user/1")
         const pendientes = await res.json()
 
         const detalles: any[] = await Promise.all(
           pendientes.map(async (item: any) => {
-            const detalleRes = await fetch(`https://chefcito-backtend-production.up.railway.app/api/recipe/${item.rxu_re_id}`)
+            const detalleRes = await fetch(`http://localhost:8084/api/recipe/${item.rxu_re_id}`)
             const receta = await detalleRes.json()
             return {
               ...receta,
-              rxu_id: item.rxu_id // 👈 Agregamos el ID del favorito
+              rxu_id: item.rxu_id
             }
           })
         )
 
-
         setUserRecipes(detalles)
       } catch (error) {
         console.error("Error al obtener recetas del usuario", error)
+      } finally {
+        setLoading(false)
       }
     }
 
     fetchUserRecipes()
   }, [])
+
 
   const handleDeleteRecipe = (index: number) => {
     const recipe = userRecipes[index]
@@ -58,7 +63,7 @@ export default function ProfileScreen() {
   const confirmDelete = async () => {
     if (recipeToDelete !== null) {
       try {
-        await fetch(`https://chefcito-backtend-production.up.railway.app/api/pending-recipe-x-user/${recipeToDelete}`, {
+        await fetch(`http://localhost:8084/api/pending-recipe-x-user/${recipeToDelete}`, {
           method: "DELETE",
         })
 
@@ -117,36 +122,42 @@ export default function ProfileScreen() {
 
           {/* Recipes List */}
           <View style={styles.recipesSection}>
-            {userRecipes.map((recipe, index) => (
-              <Card
-                key={recipe.re_id}
-                style={styles.recipeCard}
-                mode="elevated"
-                elevation={1}
-              >
-                <Card.Content style={styles.recipeCardContent}>
-                  <View style={styles.recipeInfo}>
+            {loading ? (
+              <View style={{ alignItems: "center", paddingVertical: 40 }}>
+                <ActivityIndicator size="large" color={theme.colors.secondary} />
+              </View>
+            ) : (
+              userRecipes.map((recipe, index) => (
+                <Card
+                  key={recipe.re_id}
+                  style={styles.recipeCard}
+                  mode="elevated"
+                  elevation={1}
+                >
+                  <Card.Content style={styles.recipeCardContent}>
+                    <View style={styles.recipeInfo}>
+                      <TouchableOpacity onPress={() => router.replace(`/recipe-detail/${recipe.re_id}`)}>
+                        <Text
+                          variant="bodyMedium"
+                          style={[styles.recipeName, { color: theme.colors.secondary }]}
+                        >
+                          {recipe.re_title}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                    <IconButton
+                      icon="close"
+                      size={20}
+                      iconColor="#FF5252"
+                      onPress={() => handleDeleteRecipe(index)}
+                      style={styles.deleteButton}
+                    />
+                  </Card.Content>
+                </Card>
+              ))
+            )}
 
-                    <TouchableOpacity onPress={() => router.replace(`/recipe-detail/${recipe.re_id}`)}>
-                      <Text
-                        variant="bodyMedium"
-                        style={[styles.recipeName, { color: theme.colors.secondary }]}
-                      >
-                        {recipe.re_title}
-                      </Text>
-                    </TouchableOpacity>
 
-                  </View>
-                  <IconButton
-                    icon="close"
-                    size={20}
-                    iconColor="#FF5252"
-                    onPress={() => handleDeleteRecipe(index)}
-                    style={styles.deleteButton}
-                  />
-                </Card.Content>
-              </Card>
-            ))}
 
           </View>
 

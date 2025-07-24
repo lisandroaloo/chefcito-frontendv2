@@ -17,9 +17,9 @@ export default function RecipeDetailScreen() {
   const { userId, user } = useAuth()
   const { saveReview } = useSaveReview()
   const [portionMultiplier, setPortionMultiplier] = useState(1)
+  const [sendingReview, setSendingReview] = useState(false);
 
-
-  // ✅ Estos también deben ir DENTRO de la función
+  // Estados relacionados a reseñas y diálogo
   const [alreadyReviewed, setAlreadyReviewed] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false)
   const [viewingReviews, setViewingReviews] = useState(false)
@@ -28,7 +28,6 @@ export default function RecipeDetailScreen() {
   const [writingReview, setWritingReview] = useState(false)
   const [userReviews, setUserReviews] = useState<{ user: string; comment: string; rating: number }[]>([])
   const [loadingReviews, setLoadingReviews] = useState(false)
-
 
   const averageRating = userReviews.length > 0
     ? userReviews.reduce((acc, r) => acc + r.rating, 0) / userReviews.length
@@ -41,7 +40,7 @@ export default function RecipeDetailScreen() {
     const decimalPart = averageRating - fullStars;
 
     if (star <= fullStars) {
-      return "star"; // llena
+      return "star";
     }
     if (star === fullStars + 1) {
       if (decimalPart >= 0.75) return "star";
@@ -58,7 +57,7 @@ export default function RecipeDetailScreen() {
       try {
         const res = await fetch(`http://localhost:8084/api/recipe/check-review/${re_id}/user/${userId}`);
         const result = await res.json();
-        setAlreadyReviewed(result.body === true); // o !!result
+        setAlreadyReviewed(result.body === true);
       } catch (error) {
         console.error("Error verificando si ya se hizo la review:", error);
       }
@@ -66,8 +65,6 @@ export default function RecipeDetailScreen() {
 
     fetchAlreadyReviewed();
   }, [userId, re_id]);
-
-
 
   useEffect(() => {
     if (!re_id) return;
@@ -96,12 +93,10 @@ export default function RecipeDetailScreen() {
     fetchReviews();
   }, []);
 
-
-
   useEffect(() => {
     const fetchFavorito = async () => {
       try {
-        const res = await fetch(`https://chefcito-backtend-production.up.railway.app/api/pending-recipe-x-user/user/1/recipe/${re_id}`);
+        const res = await fetch(`http://localhost:8084/api/pending-recipe-x-user/user/1/recipe/${re_id}`);
 
         if (res.status === 200) {
           const data = await res.json();
@@ -110,13 +105,11 @@ export default function RecipeDetailScreen() {
             setRxuId(data.rxu_id);
           }
         } else if (res.status === 404) {
-          // No está en favoritos: no hacer nada
           setFavorito(false);
           setRxuId(null);
         } else {
           console.error("Error inesperado al verificar favorito:", res.status);
         }
-
       } catch (err) {
         console.error("Error al verificar favorito", err);
       }
@@ -125,7 +118,6 @@ export default function RecipeDetailScreen() {
     fetchFavorito();
   }, []);
 
-
   const toggleFavorito = async () => {
     if (!re_id) return;
 
@@ -133,25 +125,22 @@ export default function RecipeDetailScreen() {
 
     try {
       if (favorito && rxuId) {
-        // Si ya está en favoritos, eliminarlo
-        await fetch(`https://chefcito-backtend-production.up.railway.app/api/pending-recipe-x-user/${rxuId}`, {
+        await fetch(`http://localhost:8084/api/pending-recipe-x-user/${rxuId}`, {
           method: "DELETE",
         });
         setFavorito(false);
         setRxuId(null);
       } else {
-        // Si no está, agregarlo
-        const res = await fetch(`https://chefcito-backtend-production.up.railway.app/api/pending-recipe-x-user`, {
+        const res = await fetch(`http://localhost:8084/api/pending-recipe-x-user`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            rxu_re_id
-              : re_id, rxu_us_id: 1
+            rxu_re_id: re_id, rxu_us_id: 1
           }),
         });
         const data = await res.json();
         setFavorito(true);
-        setRxuId(data.rxu_id); // suponiendo que el backend devuelve el nuevo id
+        setRxuId(data.rxu_id);
       }
     } catch (err) {
       console.error("Error al cambiar estado favorito", err);
@@ -159,7 +148,6 @@ export default function RecipeDetailScreen() {
       setLoadingFav(false);
     }
   };
-
 
   if (loading) {
     return (
@@ -193,7 +181,6 @@ export default function RecipeDetailScreen() {
     return null
   }
 
-  // Campos según respuesta del backend
   const ingredients: any[] = recipe.ingredients ?? []
   const steps: string[] = recipe.steps ?? []
   const title: string = recipe.re_title ?? "Receta sin título"
@@ -205,11 +192,9 @@ export default function RecipeDetailScreen() {
     <Surface style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          {/* Imagen receta */}
           <Image source={{ uri: imageUri }} style={styles.recipeImage} />
 
           <View style={styles.content}>
-            {/* Título y favorito */}
             <View style={styles.header}>
               <Text variant="headlineMedium" style={[styles.title, { color: "#FFFFFF" }]}>
                 {title}
@@ -223,7 +208,6 @@ export default function RecipeDetailScreen() {
               />
             </View>
 
-            {/* Rating de ejemplo */}
             <View style={styles.rating}>
               {stars.map((star) => (
                 <IconButton
@@ -272,8 +256,6 @@ export default function RecipeDetailScreen() {
               </Button>
             </View>
 
-
-            {/* Ingredientes */}
             <Card style={styles.section} mode="elevated" elevation={2}>
               <Card.Content style={styles.sectionContent}>
                 <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.secondary }]}>
@@ -286,18 +268,15 @@ export default function RecipeDetailScreen() {
                         <Text variant="bodyMedium" style={styles.ingredientText}>
                           • {ingredient.name} — {parseFloat(ingredient.quantity) * portionMultiplier} {ingredient.unit}
                         </Text>
-
                       </View>
                     ))
                   ) : (
                     <Text variant="bodyMedium">No hay ingredientes listados.</Text>
                   )}
-
                 </View>
               </Card.Content>
             </Card>
 
-            {/* Pasos */}
             <Card style={styles.section} mode="elevated" elevation={2}>
               <Card.Content style={styles.sectionContent}>
                 <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.secondary }]}>
@@ -326,6 +305,7 @@ export default function RecipeDetailScreen() {
           </View>
         </ScrollView>
       </SafeAreaView>
+
       <Portal>
         <Dialog
           visible={dialogVisible}
@@ -342,17 +322,23 @@ export default function RecipeDetailScreen() {
           </Dialog.Title>
 
           <Dialog.Content>
-            {writingReview ? (
+            {sendingReview ? (
+              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 16 }}>
+                <ActivityIndicator size="small" color={theme.colors.primary} />
+                <Text style={{ marginLeft: 12 }}>Enviando reseña...</Text>
+              </View>
+            ) : writingReview ? (
               <>
                 <Text variant="bodyMedium" style={{ marginBottom: 8 }}>Puntaje:</Text>
                 <View style={{ flexDirection: "row", marginBottom: 16 }}>
-                  {[1, 2, 3, 4, 5].map((star) => (
+                  {stars.map((star) => (
                     <IconButton
                       key={star}
                       icon={star <= reviewRating ? "star" : "star-outline"}
                       iconColor="#FFD700"
                       size={24}
                       onPress={() => setReviewRating(star)}
+                      disabled={sendingReview}
                     />
                   ))}
                 </View>
@@ -365,17 +351,18 @@ export default function RecipeDetailScreen() {
                   onChangeText={setNewReview}
                   placeholder="Ej: Muy buena receta..."
                   style={{ marginBottom: 16 }}
+                  editable={!sendingReview}
                 />
               </>
             ) : viewingReviews ? (
               loadingReviews ? (
-                <Text>Cargando reseñas...</Text>
+                <ActivityIndicator size="small" color={theme.colors.primary} />
               ) : userReviews.length > 0 ? (
                 userReviews.map((review, index) => (
                   <View key={index} style={{ marginBottom: 10 }}>
                     <Text variant="bodyMedium" style={{ fontWeight: "bold" }}>{review.user}</Text>
                     <View style={{ flexDirection: "row", marginVertical: 4 }}>
-                      {[1, 2, 3, 4, 5].map((star) => (
+                      {stars.map((star) => (
                         <IconButton
                           key={star}
                           icon={star <= (review.rating ?? 3) ? "star" : "star-outline"}
@@ -397,37 +384,51 @@ export default function RecipeDetailScreen() {
             )}
           </Dialog.Content>
 
-
           <Dialog.Actions>
             {writingReview ? (
               <>
                 <Button
                   onPress={async () => {
-                    if (newReview.trim() !== "" && reviewRating > 0) {
-                      const success = await saveReview(re_id, userId, reviewRating, newReview)
+                    if (reviewRating === 0) {
+                      alert("Por favor, asigná un puntaje.");
+                      return;
+                    }
+                    if (newReview.trim().length === 0) {
+                      alert("Por favor, escribí tu reseña.");
+                      return;
+                    }
 
-                      if (success) {
-                        setUserReviews([
-                          ...userReviews,
-                          { user: user, comment: newReview, rating: reviewRating }
-                        ])
-                        setNewReview("")
-                        setReviewRating(0)
-                        setWritingReview(false)
-                        setViewingReviews(true)
-                      }
+                    setSendingReview(true);
+                    try {
+                      // Aquí iría el llamado a saveReview o la API para guardar la reseña
+                      await saveReview(re_id, userId, reviewRating, newReview);
+                      alert("Reseña enviada con éxito");
+                      setDialogVisible(false);
+                      setWritingReview(false);
+                      setNewReview("");
+                      setReviewRating(0);
+                      setAlreadyReviewed(true);
+                      // Actualizar la lista de reseñas
+                      setUserReviews(prev => [...prev, { user: user?.name || "Tú", comment: newReview, rating: reviewRating }]);
+                    } catch (error) {
+                      alert("Error enviando la reseña.");
+                      console.error(error);
+                    } finally {
+                      setSendingReview(false);
                     }
                   }}
+                  disabled={sendingReview}
                 >
                   Enviar
                 </Button>
 
                 <Button
                   onPress={() => {
-                    setWritingReview(false)
-                    setNewReview("")
-                    setReviewRating(0)
+                    setWritingReview(false);
+                    setNewReview("");
+                    setReviewRating(0);
                   }}
+                  disabled={sendingReview}
                 >
                   Cancelar
                 </Button>
@@ -439,15 +440,13 @@ export default function RecipeDetailScreen() {
                 <Button
                   onPress={() => {
                     if (!userId) {
-                      alert("Tenés que iniciar sesión para dejar una reseña.")
+                      alert("Tenés que iniciar sesión para dejar una reseña.");
                       return;
                     }
-
                     if (alreadyReviewed) {
                       alert("Ya dejaste una reseña para esta receta.");
                       return;
                     }
-
                     setWritingReview(true);
                   }}
                 >

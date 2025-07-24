@@ -37,7 +37,7 @@ export default function EditRecipeScreen() {
 
   const [recipeName, setRecipeName] = useState("")
   const [recipeImg, setRecipeImg] = useState("")
-  const [ingredients, setIngredients] = useState([""])
+  const [ingredients, setIngredients] = useState([{ name: "", quantity: "", unit: "" }])
   const [steps, setSteps] = useState([""])
   const [isVegan, setIsVegan] = useState(false)
   const [isVegetarian, setIsVegetarian] = useState(false)
@@ -55,7 +55,13 @@ export default function EditRecipeScreen() {
         setEditingRecipe(recipe)
         setRecipeImg(recipe.re_picture)
         setRecipeName(recipe.re_title)
-        setIngredients(recipe.ingredients || [""])
+        setIngredients(
+          (recipe.ingredients || []).map((ing) => ({
+            name: ing.name || "",
+            quantity: ing.quantity || "",
+            unit: ing.unit || "",
+          }))
+        )
         setSteps(recipe.steps || [""])
         setIsVegan(recipe.re_suitable_for_vegan)
         setIsVegetarian(recipe.re_suitable_for_vegetarian)
@@ -90,7 +96,7 @@ export default function EditRecipeScreen() {
       ...editingRecipe,
       title: recipeName,
       picture: recipeImg,
-      ingredients: ingredients.filter((i) => i.trim() !== ""),
+      ingredients: ingredients.filter(i => i.name.trim() !== ""),
       steps: steps.filter((s) => s.trim() !== ""),
       vegan: isVegan,
       vegetarian: isVegetarian,
@@ -101,7 +107,7 @@ export default function EditRecipeScreen() {
     try {
       setSaving(true)
       const res = await fetch(
-        `https://chefcito-backtend-production.up.railway.app/api/recipe/${editingRecipe.re_id}`,
+        `http://localhost:8084/api/recipe/${editingRecipe.re_id}`,
         {
           method: "PUT",
           headers: {
@@ -121,14 +127,17 @@ export default function EditRecipeScreen() {
     }
   }
 
-  const addIngredient = () => setIngredients([...ingredients, ""])
+  const addIngredient = () => setIngredients([...ingredients, { name: "", quantity: "", unit: "" }])
+
   const removeIngredient = (index: number) =>
     setIngredients(ingredients.filter((_, i) => i !== index))
-  const updateIngredient = (index: number, value: string) => {
-    const newList = [...ingredients]
-    newList[index] = value
-    setIngredients(newList)
+
+  const updateIngredient = (index: number, field: keyof typeof ingredients[0], value: string) => {
+    const updated = [...ingredients]
+    updated[index][field] = value
+    setIngredients(updated)
   }
+
 
   const addStep = () => setSteps([...steps, ""])
   const removeStep = (index: number) =>
@@ -216,16 +225,28 @@ export default function EditRecipeScreen() {
                     <View key={index} style={styles.inputRow}>
                       <TextInput
                         label={`Ingrediente ${index + 1}`}
-                        value={ingredient}
-                        onChangeText={(val) => updateIngredient(index, val)}
+                        value={ingredient.name}
+                        onChangeText={(val) => updateIngredient(index, "name", val)}
+                        mode="outlined"
+                        style={[styles.listInput, { flex: 2, marginRight: 8 }]}
+                        theme={{ colors: { onSurfaceVariant: "#666666", primary: theme.colors.secondary } }}
+                      />
+                      <TextInput
+                        label="Cant."
+                        value={ingredient.quantity}
+                        onChangeText={(val) => updateIngredient(index, "quantity", val)}
+                        mode="outlined"
+                        keyboardType="numeric"
+                        style={[styles.listInput, { flex: 1, marginRight: 8 }]}
+                        theme={{ colors: { onSurfaceVariant: "#666666", primary: theme.colors.secondary } }}
+                      />
+                      <TextInput
+                        label="Unidad"
+                        value={ingredient.unit}
+                        onChangeText={(val) => updateIngredient(index, "unit", val)}
                         mode="outlined"
                         style={[styles.listInput, { flex: 1 }]}
-                        theme={{
-                          colors: {
-                            onSurfaceVariant: "#666666",
-                            primary: theme.colors.secondary,
-                          },
-                        }}
+                        theme={{ colors: { onSurfaceVariant: "#666666", primary: theme.colors.secondary } }}
                       />
                       <IconButton
                         icon="trash-can"
@@ -235,6 +256,7 @@ export default function EditRecipeScreen() {
                       />
                     </View>
                   ))}
+
                 </Card.Content>
               </Card>
 

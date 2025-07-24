@@ -12,7 +12,7 @@ export function useGetRecipesByUser(userName: string) {
     const fetchRecipes = async () => {
       setLoading(true)
       try {
-        const res = await fetch("https://chefcito-backtend-production.up.railway.app/api/recipe/user", {
+        const res = await fetch("http://localhost:8084/api/recipe/user", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ us_name: userName }),

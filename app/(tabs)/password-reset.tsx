@@ -5,6 +5,8 @@ import { View, StyleSheet } from "react-native"
 import { TextInput, Button, useTheme, Surface, Text } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Image } from 'react-native'
+import { useAuth } from "../context/AuthContext"
+import { useRouter } from "expo-router"
 
 export default function PasswordResetScreen() {
   const theme = useTheme()
@@ -15,38 +17,82 @@ export default function PasswordResetScreen() {
   const [code, setCode] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const { userId } = useAuth()
+  const router = useRouter()
 
-  // Simular envío del código al mail
-  const sendCodeToEmail = () => {
+
+  const sendCodeToEmail = async () => {
     if (!email) {
       alert("Por favor ingresa un email válido.")
       return
     }
-    // Aquí iría la llamada real para enviar el código
-    alert(`Código enviado a ${email}`)
-    setStep(2)
+
+    try {
+      const res = await fetch("http://localhost:8084/api/user/recover-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      })
+
+      if (res.ok) {
+        alert(`Código enviado a ${email}`)
+        setStep(2)
+      } else {
+        const errorData = await res.json()
+        alert(errorData.message || "Error enviando el código")
+      }
+    } catch (error) {
+      console.error("Error enviando código:", error)
+      alert("Error enviando el código. Intenta nuevamente.")
+    }
   }
+
 
   // Validar código y cambio de contraseña
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     if (!code) {
-      alert("Por favor ingresa el código que recibiste.")
-      return
+      alert("Por favor ingresa el código que recibiste.");
+      return;
     }
     if (password.length < 6) {
-      alert("La contraseña debe tener al menos 6 caracteres.")
-      return
+      alert("La contraseña debe tener al menos 6 caracteres.");
+      return;
     }
     if (password !== confirmPassword) {
-      alert("Las contraseñas no coinciden.")
-      return
+      alert("Las contraseñas no coinciden.");
+      return;
     }
 
-    // Aquí iría la llamada real para validar código y cambiar contraseña
-    alert("Contraseña cambiada correctamente")
-    // Por ejemplo, navegar a login u otra pantalla
-    // navigation.navigate("login")
-  }
+    try {
+      // Suponiendo que el email es el identificador del usuario y que podés obtener su id acá.
+      // Sino reemplazar `userId` por el id correcto.
+      // Por ejemplo: const userId = obtenerUserIdPorEmail(email);
+
+      // Para este ejemplo, voy a usar un id hardcodeado 1. Cambialo a lo que necesites.
+
+
+      const response = await fetch("http://localhost:8084/api/user/check-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code, password }),
+      })
+
+      if (response.ok) {
+
+        alert("Código válido. Contraseña cambiada correctamente.");
+        // Reiniciar estados o navegar a login
+        setTimeout(() => router.replace("/"), 1000)
+
+      } else {
+        // Código inválido
+        alert("Código inválido. Por favor, verifica el código que recibiste.");
+      }
+    } catch (error) {
+      console.error("Error validando código:", error);
+      alert("Ocurrió un error al validar el código. Intenta nuevamente.");
+    }
+  };
+
 
   // Volver al paso 1 para corregir email y limpiar campos
   const handleChangeEmail = () => {
