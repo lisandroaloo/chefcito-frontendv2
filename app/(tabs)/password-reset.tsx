@@ -28,7 +28,7 @@ export default function PasswordResetScreen() {
     }
 
     try {
-      const res = await fetch("http://localhost:8084/api/user/recover-password", {
+      const res = await fetch("https://chefcito-backend-production.up.railway.app/api/user/recover-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -71,7 +71,7 @@ export default function PasswordResetScreen() {
       // Para este ejemplo, voy a usar un id hardcodeado 1. Cambialo a lo que necesites.
 
 
-      const response = await fetch("http://localhost:8084/api/user/check-password", {
+      const response = await fetch("https://chefcito-backend-production.up.railway.app/api/user/check-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code, password }),

@@ -16,15 +16,22 @@ export default function LoginScreen() {
   const theme = useTheme()
   const { login } = useAuth()
 
+
+  const [isLoading, setIsLoading] = useState(false)
+
   const handleLogin = async () => {
     try {
+      setIsLoading(true)
       await login(username, password)
       navigation.navigate("home")
     } catch (error) {
       console.error("Login fallido:", error.message)
       alert("username o contraseña incorrectos.")
+    } finally {
+      setIsLoading(false)
     }
   }
+
 
 
   const handleRecoverPassword = () => {
@@ -79,9 +86,12 @@ export default function LoginScreen() {
               style={[styles.loginButton, { backgroundColor: theme.colors.secondary }]}
               contentStyle={styles.buttonContent}
               labelStyle={styles.buttonLabel}
+              disabled={isLoading}
+              loading={isLoading} // Esto muestra un spinner si usás react-native-paper v5+
             >
-              Log in
+              {isLoading ? "Logging in..." : "Log in"}
             </Button>
+
             <Text
               onPress={handleRecoverPassword}
               style={{

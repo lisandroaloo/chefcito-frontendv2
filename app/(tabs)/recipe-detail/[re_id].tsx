@@ -55,7 +55,7 @@ export default function RecipeDetailScreen() {
       if (!userId || !re_id) return;
 
       try {
-        const res = await fetch(`http://localhost:8084/api/recipe/check-review/${re_id}/user/${userId}`);
+        const res = await fetch(`https://chefcito-backend-production.up.railway.app/api/recipe/check-review/${re_id}/user/${userId}`);
         const result = await res.json();
         setAlreadyReviewed(result.body === true);
       } catch (error) {
@@ -72,7 +72,7 @@ export default function RecipeDetailScreen() {
     const fetchReviews = async () => {
       setLoadingReviews(true);
       try {
-        const res = await fetch(`http://localhost:8084/api/recipe/reviews/${re_id}`);
+        const res = await fetch(`https://chefcito-backend-production.up.railway.app/api/recipe/reviews/${re_id}`);
         if (!res.ok) throw new Error(`Error ${res.status}`);
         const data = await res.json();
 
@@ -96,7 +96,7 @@ export default function RecipeDetailScreen() {
   useEffect(() => {
     const fetchFavorito = async () => {
       try {
-        const res = await fetch(`http://localhost:8084/api/pending-recipe-x-user/user/1/recipe/${re_id}`);
+        const res = await fetch(`https://chefcito-backend-production.up.railway.app/api/pending-recipe-x-user/user/1/recipe/${re_id}`);
 
         if (res.status === 200) {
           const data = await res.json();
@@ -125,13 +125,13 @@ export default function RecipeDetailScreen() {
 
     try {
       if (favorito && rxuId) {
-        await fetch(`http://localhost:8084/api/pending-recipe-x-user/${rxuId}`, {
+        await fetch(`https://chefcito-backend-production.up.railway.app/api/pending-recipe-x-user/${rxuId}`, {
           method: "DELETE",
         });
         setFavorito(false);
         setRxuId(null);
       } else {
-        const res = await fetch(`http://localhost:8084/api/pending-recipe-x-user`, {
+        const res = await fetch(`https://chefcito-backend-production.up.railway.app/api/pending-recipe-x-user`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

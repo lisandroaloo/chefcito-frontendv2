@@ -9,7 +9,7 @@ export function useSaveReview() {
     const saveReview = async (re_id :any , userId:any , reviewRating:any , newReview:any ) => {
         setLoading(true)
         try {
-            const res = await fetch("http://localhost:8084/api/recipe/review", {
+            const res = await fetch("https://chefcito-backend-production.up.railway.app/api/recipe/review", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

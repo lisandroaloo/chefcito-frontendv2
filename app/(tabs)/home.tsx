@@ -12,7 +12,6 @@ export default function HomeScreen() {
     { title: 'Todas', icon: 'restaurant-outline', image: require('../../assets/todas.jpeg') },
     { title: 'Sin tacc', icon: 'restaurant-outline', image: require('../../assets/sintacc.jpeg') },
     { title: 'Veganas', icon: 'leaf-outline', image: require('../../assets/vegano.jpeg') },
-    { title: 'Populares', icon: 'ice-cream-outline', image: require('../../assets/popular.jpeg') },
     { title: 'Vegetarianas', icon: 'heart-outline', image: require('../../assets/vegetariano.jpeg') },
     { title: 'Hamburguesas', icon: 'fast-food-outline', image: require('../../assets/hamburguesa.jpeg') },
     { title: 'Sin lactosa', icon: 'close-circle-outline', image: require('../../assets/lactosa.jpeg') },
@@ -33,13 +32,6 @@ export default function HomeScreen() {
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
         >
-          {/* Title */}
-          <Text
-            variant="headlineSmall"
-            style={[styles.title, { color: theme.colors.secondary }]}
-          >
-            CATEGORIAS
-          </Text>
 
           {/* Categories Grid - Exact Material 3 Cards */}
           <View style={styles.grid}>
@@ -65,11 +57,22 @@ export default function HomeScreen() {
                       />
                     </View>
                     <Text
-                      variant="bodyMedium"
-                      style={[styles.categoryText, { color: "black", textShadowColor: 'white', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 }]}
+                      style={{
+                        color: "white",
+                        fontWeight: "bold",
+                        fontSize: 16,
+                        textAlign: "center",
+                        textShadowColor: "black",
+                        textShadowOffset: { width: 0, height: 0 },
+                        textShadowRadius: 4, // simula contorno
+                      }}
                     >
                       {category.title}
                     </Text>
+
+
+
+
                   </Card.Content>
                 </ImageBackground>
               </Card>
@@ -111,6 +114,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "space-between",
     gap: 16,
+  
   },
   categoryCard: {
     width: "47%",

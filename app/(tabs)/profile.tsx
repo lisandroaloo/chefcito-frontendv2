@@ -28,12 +28,12 @@ export default function ProfileScreen() {
     const fetchUserRecipes = async () => {
       setLoading(true)
       try {
-        const res = await fetch("http://localhost:8084/api/pending-recipe-x-user/user/1")
+        const res = await fetch("https://chefcito-backend-production.up.railway.app/api/pending-recipe-x-user/user/1")
         const pendientes = await res.json()
 
         const detalles: any[] = await Promise.all(
           pendientes.map(async (item: any) => {
-            const detalleRes = await fetch(`http://localhost:8084/api/recipe/${item.rxu_re_id}`)
+            const detalleRes = await fetch(`https://chefcito-backend-production.up.railway.app/api/recipe/${item.rxu_re_id}`)
             const receta = await detalleRes.json()
             return {
               ...receta,
@@ -63,7 +63,7 @@ export default function ProfileScreen() {
   const confirmDelete = async () => {
     if (recipeToDelete !== null) {
       try {
-        await fetch(`http://localhost:8084/api/pending-recipe-x-user/${recipeToDelete}`, {
+        await fetch(`https://chefcito-backend-production.up.railway.app/api/pending-recipe-x-user/${recipeToDelete}`, {
           method: "DELETE",
         })
 
@@ -100,11 +100,17 @@ export default function ProfileScreen() {
           showsVerticalScrollIndicator={false}
         >
           {/* Profile Section */}
-          <View style={styles.profileSection}>
+          <View style={[styles.profileSection, { alignItems: 'center' }]}>
             <Avatar.Image
               size={120}
-              source={{ uri: 'https://via.placeholder.com/120x120/4CAF50/FFFFFF?text=👨‍🍳' }}
-              style={styles.avatar}
+              source={{ uri: 'https://via.placeholder.com/120x120/2196F3/FFFFFF?text=👤' }}
+              style={{
+                borderWidth: 4,
+                borderColor: '#fff',
+                borderRadius: 60, // la mitad de size para borde redondo perfecto
+                backgroundColor: '#2196F3', // opcional para que se note el borde
+                marginBottom: 16,
+              }}
             />
             <Text
               variant="headlineMedium"
@@ -119,6 +125,9 @@ export default function ProfileScreen() {
               Nuestros recetarios
             </Text>
           </View>
+
+
+
 
           {/* Recipes List */}
           <View style={styles.recipesSection}>
@@ -292,4 +301,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
+  largeAvatar: {
+    marginBottom: 16, // espacio entre avatar y nombre
+    borderWidth: 3,
+    borderColor: 'white', // opcional, borde blanco alrededor
+  },
+
+
 })
